@@ -1,0 +1,93 @@
+import { NextResponse } from "next/server";
+import { createAdminClient } from "@/lib/supabase/server";
+import { providerOrderStatus, providerBalance, normalizeProviderStatus } from "@/lib/smmProvider";
+import { sendEmail, orderStatusEmail } from "@/lib/email";
+import { sendAlert } from "@/lib/alert";
+
+// Protect this with a secret so only Vercel Cron (or you) can trigger it —
+// set CRON_SECRET in your environment and call this with
+// `Authorization: Bearer <CRON_SECRET>`.
+export async function GET(request: Request) {
+  const authHeader = request.headers.get("authorization");
+  if (process.env.CRON_SECRET && authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
+    return NextResponse.json({ error: "Yetkisiz" }, { status: 401 });
+  }
+
+  const admin = createAdminClient();
+
+  // ---- 1) Sync order statuses from each provider ----
+  const { data: orders } = await admin
+    .from("orders")
+    .select(
+      "id, status, charge, user_id, provider_order_id, services(name, provider_id, providers(id, api_url, api_key)), profiles(email)"
+    )
+    .in("status", ["processing", "in_progress"])
+    .not("provider_order_id", "is", null)
+    .limit(100);
+
+  let updated = 0;
+  for (const o of orders ?? []) {
+    const providerCreds = (o as any).services?.providers;
+    if (!providerCreds) continue;
+    try {
+      const result = await providerOrderStatus(providerCreds, o.provider_order_id as string);
+      const newStatus = normalizeProviderStatus(result.status);
+      const wasAlreadyClosed = o.status === "refunded" || o.status === "canceled";
+
+      await admin
+        .from("orders")
+        .update({
+          status: newStatus,
+          start_count: result.startCount,
+          remains: result.remains,
+          updated_at: new Date().toISOString(),
+        })
+        .eq("id", o.id);
+
+      if ((newStatus === "refunded" || newStatus === "canceled") && !wasAlreadyClosed) {
+        await admin.rpc("admin_adjust_balance", {
+          p_user_id: o.user_id,
+          p_amount: o.charge,
+          p_note: `Sipariş #${o.id} tedarikçi tarafından iptal/iade edildi`,
+        });
+      }
+
+      const customerEmail = (o as any).profiles?.email;
+      const serviceName = (o as any).services?.name ?? "Hizmet";
+      if (customerEmail && o.status !== newStatus && ["completed", "partial", "canceled", "refunded"].includes(newStatus)) {
+        const { subject, html } = orderStatusEmail({ orderId: o.id, serviceName, status: newStatus });
+        await sendEmail(customerEmail, subject, html);
+      }
+
+      updated++;
+    } catch {
+      // leave as-is, will retry next run
+    }
+  }
+
+  // ---- 2) Check provider balances and alert if running low ----
+  const { data: providers } = await admin
+    .from("providers")
+    .select("id, name, api_url, api_key, low_balance_threshold")
+    .eq("is_active", true);
+
+  for (const p of providers ?? []) {
+    try {
+      const { balance, currency } = await providerBalance(p as any);
+      await admin
+        .from("providers")
+        .update({ last_balance: balance, last_balance_checked_at: new Date().toISOString() })
+        .eq("id", p.id);
+
+      if (balance < Number(p.low_balance_threshold)) {
+        await sendAlert(
+          `⚠️ Tedarikçi bakiyesi düşük: "${p.name}" — kalan ${balance} ${currency ?? ""}. Panelden bakiye yükle.`
+        );
+      }
+    } catch {
+      // provider may not support the `balance` action — safe to skip
+    }
+  }
+
+  return NextResponse.json({ checked: orders?.length ?? 0, updated });
+}

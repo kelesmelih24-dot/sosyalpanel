@@ -18,6 +18,7 @@ const adminLinks = [
   { href: "/admin/tedarikciler", label: "Tedarikçiler", icon: "⇄" },
   { href: "/admin/siparisler", label: "Siparişler", icon: "☰" },
   { href: "/admin/kullanicilar", label: "Kullanıcılar", icon: "◎" },
+  { href: "/admin/degerlendirmeler", label: "Değerlendirmeler", icon: "★" },
 ];
 
 export function Sidebar({ variant = "user" }: { variant?: "user" | "admin" }) {

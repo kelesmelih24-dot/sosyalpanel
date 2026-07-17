@@ -3,6 +3,8 @@
 import Link from "next/link";
 import Image from "next/image";
 import { useState } from "react";
+import { CampaignBanner } from "@/components/CampaignBanner";
+import { FloatingWhatsapp } from "@/components/FloatingWhatsapp";
 
 const platforms = [
   { key: "instagram", name: "Instagram" },
@@ -22,7 +24,9 @@ export function PublicHeader() {
   const [kurumsalOpen, setKurumsalOpen] = useState(false);
 
   return (
-    <header className="sticky top-0 z-40 bg-paper">
+    <>
+      <CampaignBanner />
+      <header className="sticky top-0 z-40 bg-paper">
       {/* Utility bar */}
       <div className="hidden border-b border-border2 bg-blush md:block">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-5 py-2 text-sm text-slateMute">
@@ -114,5 +118,7 @@ export function PublicHeader() {
         </div>
       </div>
     </header>
+    <FloatingWhatsapp />
+    </>
   );
 }

@@ -27,7 +27,7 @@ const steps = [
 const faqs = [
   { q: "Ödeme yaptıktan sonra bakiyem ne zaman yüklenir?", a: "Havale ve kripto ödemelerinde bakiye, dekont onayından sonra birkaç dakika içinde hesabına yansır." },
   { q: "Siparişim düşerse ne olur?", a: "Çoğu hizmette düşme garantisi vardır; garanti süresi içinde düşen adetler otomatik olarak tamamlanır." },
-  { q: "Üye olmadan sipariş verebilir miyim?", a: "Sipariş vermek için ücretsiz üyelik gerekir, ama mevcut bir siparişini üye olmadan da 'Sipariş Sorgula' sayfasından takip edebilirsin." },
+  { q: "Üye olmadan sipariş verebilir miyim?", a: "Evet. Hizmet sayfasında 'Üye Olmadan Sipariş Ver' seçeneğiyle hesap açmadan sipariş verebilir, durumunu 'Sipariş Sorgula' sayfasından takip edebilirsin. Bakiye biriktirip daha hızlı sipariş vermek istersen üyelik de her zaman ücretsizdir." },
   { q: "Yanlış link girdim, iptal edebilir miyim?", a: "Sipariş 'beklemede' durumundayken destek ekibine yazarak iptal talep edebilirsin." },
 ];
 
@@ -39,6 +39,16 @@ export default async function LandingPage() {
     .from("orders")
     .select("id", { count: "exact", head: true })
     .eq("status", "completed");
+
+  const { data: reviews } = await admin
+    .from("reviews")
+    .select("author_name, comment, rating, created_at")
+    .eq("is_published", true)
+    .order("created_at", { ascending: false })
+    .limit(6);
+
+  const reviewCount = reviews?.length ?? 0;
+  const avgRating = reviewCount ? (reviews!.reduce((s: number, r: any) => s + r.rating, 0) / reviewCount).toFixed(1) : null;
 
   const stats = [
     { label: "Teslim Edilen Sipariş", value: (orderCount ?? 0).toLocaleString("tr-TR") + "+" },
@@ -66,6 +76,14 @@ export default async function LandingPage() {
               Sosyal medyada şimdiye kadar hiç olmadığı kadar güçlüsünüz! Kontrol tamamen sizin elinizde.
               Hemen platformunuzu ve paketinizi belirleyip sipariş oluşturun.
             </p>
+
+            {avgRating && (
+              <div className="mt-4 flex items-center gap-2 text-sm">
+                <span className="text-amber-500">{"★".repeat(Math.round(Number(avgRating)))}{"☆".repeat(5 - Math.round(Number(avgRating)))}</span>
+                <span className="font-semibold text-slate">{avgRating}</span>
+                <span className="text-slateMute">({reviewCount} değerlendirme)</span>
+              </div>
+            )}
             <div className="mt-8 flex flex-wrap items-center gap-4">
               <Link
                 href="/kayit"
@@ -79,15 +97,15 @@ export default async function LandingPage() {
             </div>
 
             {/* Platform icon row */}
-            <div className="mt-10 flex flex-wrap justify-center gap-3 md:justify-start">
+            <div className="mt-10 flex flex-wrap justify-center gap-4">
               {platforms.map((p) => (
                 <Link
                   key={p.key}
                   href={`/hizmetler/${p.key}`}
                   title={p.name}
-                  className="flex h-14 w-14 items-center justify-center rounded-xl bg-paper text-slate shadow-sm ring-1 ring-border2 transition-transform hover:scale-110 hover:text-brand"
+                  className="flex h-16 w-16 items-center justify-center rounded-xl bg-paper text-slate shadow-sm ring-1 ring-border2 transition-transform hover:scale-110 hover:text-brand"
                 >
-                  <PlatformIcon platform={p.key} className="h-7 w-7" />
+                  <PlatformIcon platform={p.key} className="h-8 w-8" />
                 </Link>
               ))}
             </div>
@@ -147,6 +165,41 @@ export default async function LandingPage() {
           </div>
         </div>
       </section>
+
+      {/* TRUST BADGES */}
+      <section className="mx-auto max-w-6xl px-5 py-16">
+        <div className="grid gap-5 sm:grid-cols-3">
+          {[
+            { icon: "🛡️", title: "Güvenilir Hizmet", text: "Tüm siparişler kayıt altında tutulur, işlemlerin durumunu her an takip edebilirsin." },
+            { icon: "💳", title: "Güvenli Ödeme", text: "Havale/EFT ve kripto ödemeleri, onay sürecinden geçtikten sonra hesabına yansır." },
+            { icon: "🎧", title: "Destek", text: "Sorularınız için e-posta ve Whatsapp üzerinden bize ulaşabilirsiniz." },
+          ].map((b) => (
+            <div key={b.title} className="rounded-2xl border border-border2 bg-blush p-6 text-center">
+              <div className="text-3xl">{b.icon}</div>
+              <div className="mt-3 font-display font-semibold text-slate">{b.title}</div>
+              <div className="mt-2 text-sm text-slateMute">{b.text}</div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* REVIEWS — real, admin-curated only; no fabricated testimonials */}
+      {reviewCount > 0 && (
+        <section className="bg-blush py-16">
+          <div className="mx-auto max-w-6xl px-5">
+            <h2 className="text-center font-display text-2xl font-bold text-slate md:text-3xl">Müşteri Yorumları</h2>
+            <div className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+              {reviews!.map((r: any, i: number) => (
+                <div key={i} className="rounded-2xl border border-border2 bg-paper p-5 shadow-sm">
+                  <div className="text-amber-500">{"★".repeat(r.rating)}{"☆".repeat(5 - r.rating)}</div>
+                  <p className="mt-3 text-sm text-slateMute">{r.comment}</p>
+                  <div className="mt-3 font-display text-sm font-semibold text-slate">{r.author_name}</div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* FAQ */}
       <section className="mx-auto max-w-6xl px-5 py-16">

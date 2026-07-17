@@ -31,6 +31,15 @@ admin yönetim paneli içerir.
   durumu üye olmadan `/siparis-sorgula`'dan (sipariş no + e-posta ile) takip edebilir.
 - **Açık temalı, pembe/magenta marka renkli vitrin sitesi** (rasyenmedya.com tarzı): üst iletişim çubuğu, platform bazlı "Hizmetler" açılır menüsü, her platform için gerçek verilerle çalışan kategori ve hizmet listeleme sayfaları (`/hizmetler/[platform]/[kategori]`), üye olmadan sipariş sorgulama (`/siparis-sorgula`)
 - Admin/kullanıcı paneli (dashboard) ayrı, koyu temalı bir uygulama arayüzü olarak kalır — bu bilinçli bir tercih, çoğu SaaS'ta vitrin sitesi ile uygulama paneli farklı görünür
+- **Gerçek değerlendirme sistemi**: sahte yıldız puanı veya uydurma müşteri yorumu YOK.
+  Admin panelinden (`/admin/degerlendirmeler`) gerçek müşteri yorumu eklersin, anasayfadaki
+  yıldız puanı ve yorum bölümü bu verilerden otomatik hesaplanır. Hiç yorum eklemezsen o
+  bölüm hiç görünmez — sahte bir sayı asla gösterilmez.
+- Güven rozetleri (Güvenilir Hizmet / Güvenli Ödeme / Destek) ve sağ altta sabit Whatsapp butonu
+- **Kampanya banner'ı** (`components/CampaignBanner.tsx`): gerçek bir bitiş tarihine bağlı
+  geri sayım. Süre dolunca otomatik kaybolur — sonsuza kadar sıfırlanan sahte bir aciliyet
+  sayacı değildir. Kullanmak için dosyadaki `CAMPAIGN_END` sabitine gerçek bir tarih gir,
+  boş (`null`) bıraktığın sürece banner hiç görünmez.
 
 ## Bu güncellemeden sonra yapman gereken tek şey
 

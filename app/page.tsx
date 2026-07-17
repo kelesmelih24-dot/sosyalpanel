@@ -79,15 +79,15 @@ export default async function LandingPage() {
             </div>
 
             {/* Platform icon row */}
-            <div className="mt-10 grid grid-cols-5 gap-2.5 sm:grid-cols-10">
+            <div className="mt-10 flex flex-wrap justify-center gap-3 md:justify-start">
               {platforms.map((p) => (
                 <Link
                   key={p.key}
                   href={`/hizmetler/${p.key}`}
                   title={p.name}
-                  className="flex h-11 w-11 items-center justify-center rounded-xl bg-paper text-slate shadow-sm ring-1 ring-border2 transition-transform hover:scale-110 hover:text-brand"
+                  className="flex h-14 w-14 items-center justify-center rounded-xl bg-paper text-slate shadow-sm ring-1 ring-border2 transition-transform hover:scale-110 hover:text-brand"
                 >
-                  <PlatformIcon platform={p.key} className="h-5 w-5" />
+                  <PlatformIcon platform={p.key} className="h-7 w-7" />
                 </Link>
               ))}
             </div>

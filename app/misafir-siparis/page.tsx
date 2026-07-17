@@ -1,7 +1,7 @@
 "use client";
 
 import { Suspense, useEffect, useState } from "react";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { PublicHeader } from "@/components/PublicHeader";
 import { createClient } from "@/lib/supabase/client";
 import { BANK_INFO } from "@/lib/constants";
@@ -16,12 +16,14 @@ type Service = {
 
 function MisafirSiparisForm() {
   const supabase = createClient();
+  const router = useRouter();
   const searchParams = useSearchParams();
   const serviceId = searchParams.get("service");
+  const prefilledQuantity = searchParams.get("quantity");
 
   const [service, setService] = useState<Service | null>(null);
   const [link, setLink] = useState("");
-  const [quantity, setQuantity] = useState<number>(0);
+  const [quantity, setQuantity] = useState<number>(prefilledQuantity ? Number(prefilledQuantity) : 0);
   const [email, setEmail] = useState("");
   const [method, setMethod] = useState("havale");
   const [dekont, setDekont] = useState<File | null>(null);
@@ -139,13 +141,23 @@ function MisafirSiparisForm() {
           />
         </div>
         <div>
-          <label className="mb-1.5 block text-sm text-slateMute">Miktar</label>
+          <div className="mb-1.5 flex items-center justify-between">
+            <label className="block text-sm text-slateMute">Miktar</label>
+            {prefilledQuantity && (
+              <button type="button" onClick={() => router.back()} className="text-xs text-brand hover:underline">
+                Değiştir
+              </button>
+            )}
+          </div>
           <input
             type="number"
             required
+            readOnly={!!prefilledQuantity}
             value={quantity || ""}
-            onChange={(e) => setQuantity(Number(e.target.value))}
-            className="w-full rounded-lg border border-border2 bg-white px-3.5 py-2.5 text-slate focus:outline-none focus:ring-2 focus:ring-brand"
+            onChange={(e) => !prefilledQuantity && setQuantity(Number(e.target.value))}
+            className={`w-full rounded-lg border border-border2 px-3.5 py-2.5 text-slate focus:outline-none focus:ring-2 focus:ring-brand ${
+              prefilledQuantity ? "bg-blush" : "bg-white"
+            }`}
           />
         </div>
         <div>

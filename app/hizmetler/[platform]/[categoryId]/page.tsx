@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { PublicHeader } from "@/components/PublicHeader";
 import { PlatformIcon } from "@/components/PlatformIcon";
+import { ServiceCard } from "@/components/ServiceCard";
 import { createClient } from "@/lib/supabase/server";
 
 export default async function CategoryPage({
@@ -50,27 +51,7 @@ export default async function CategoryPage({
         ) : (
           <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
             {services.map((s) => (
-              <div key={s.id} className="flex flex-col rounded-2xl border border-border2 bg-paper p-6 shadow-sm">
-                <div className="font-display font-semibold text-slate">{s.name}</div>
-                {s.description && <p className="mt-1 text-sm text-slateMute">{s.description}</p>}
-                <div className="mt-3 text-xs text-slateMute">
-                  Min {s.min_quantity.toLocaleString("tr-TR")} — Maks {s.max_quantity.toLocaleString("tr-TR")}
-                </div>
-                <div className="mt-4 flex items-center justify-between">
-                  <span className="font-mono text-lg font-bold text-brand">
-                    ₺{Number(s.price_per_1000).toFixed(2)}
-                    <span className="text-xs font-sans font-normal text-slateMute"> / 1000</span>
-                  </span>
-                </div>
-                <div className="mt-3">
-                  <Link
-                    href={`/misafir-siparis?service=${s.id}`}
-                    className="block rounded-full bg-brand px-4 py-2 text-center text-sm font-semibold text-white transition-colors hover:bg-brandDark"
-                  >
-                    Sipariş Ver
-                  </Link>
-                </div>
-              </div>
+              <ServiceCard key={s.id} service={s} />
             ))}
           </div>
         )}

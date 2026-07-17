@@ -5,27 +5,19 @@ import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 
-const userLinks = [
-  { href: "/dashboard", label: "Genel Bakış", icon: "◧" },
-  { href: "/dashboard/siparis-ver", label: "Sipariş Ver", icon: "◈" },
-  { href: "/dashboard/siparislerim", label: "Siparişlerim", icon: "☰" },
-  { href: "/dashboard/bakiye-yukle", label: "Bakiye Yükle", icon: "◎" },
-];
-
 const adminLinks = [
   { href: "/admin", label: "Genel Bakış", icon: "◧" },
   { href: "/admin/hizmetler", label: "Hizmetler", icon: "◈" },
   { href: "/admin/tedarikciler", label: "Tedarikçiler", icon: "⇄" },
   { href: "/admin/siparisler", label: "Siparişler", icon: "☰" },
-  { href: "/admin/kullanicilar", label: "Kullanıcılar", icon: "◎" },
   { href: "/admin/degerlendirmeler", label: "Değerlendirmeler", icon: "★" },
+  { href: "/admin/kullanicilar", label: "Yöneticiler", icon: "◎" },
 ];
 
-export function Sidebar({ variant = "user" }: { variant?: "user" | "admin" }) {
+export function Sidebar() {
   const pathname = usePathname();
   const router = useRouter();
   const supabase = createClient();
-  const links = variant === "admin" ? adminLinks : userLinks;
 
   async function handleLogout() {
     await supabase.auth.signOut();
@@ -41,7 +33,7 @@ export function Sidebar({ variant = "user" }: { variant?: "user" | "admin" }) {
           SosyalPanel
         </Link>
         <nav className="flex flex-col gap-1">
-          {links.map((link) => {
+          {adminLinks.map((link) => {
             const active = pathname === link.href;
             return (
               <Link

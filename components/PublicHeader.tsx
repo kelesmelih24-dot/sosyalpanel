@@ -8,12 +8,13 @@ import { FloatingWhatsapp } from "@/components/FloatingWhatsapp";
 
 const platforms = [
   { key: "instagram", name: "Instagram" },
+  { key: "twitter", name: "Twitter" },
   { key: "tiktok", name: "TikTok" },
   { key: "youtube", name: "YouTube" },
-  { key: "twitter", name: "X / Twitter" },
-  { key: "telegram", name: "Telegram" },
   { key: "facebook", name: "Facebook" },
   { key: "spotify", name: "Spotify" },
+  { key: "telegram", name: "Telegram" },
+  { key: "twitch", name: "Twitch" },
   { key: "pinterest", name: "Pinterest" },
   { key: "linkedin", name: "LinkedIn" },
   { key: "soundcloud", name: "SoundCloud" },
@@ -104,17 +105,12 @@ export function PublicHeader() {
             <Link href="/iletisim" className="hover:text-brand transition-colors">İletişim</Link>
           </nav>
 
-          <div className="flex items-center gap-3">
-            <Link href="/giris" className="hidden text-sm font-medium text-slateMute hover:text-brand transition-colors sm:block">
-              Giriş Yap
-            </Link>
-            <Link
-              href="/kayit"
-              className="rounded-lg bg-brand px-4 py-2 text-sm font-semibold text-white shadow-sm transition-transform hover:scale-[1.03] hover:bg-brandDark"
-            >
-              Kayıt Ol
-            </Link>
-          </div>
+          <Link
+            href="/#hizmetler"
+            className="rounded-lg bg-brand px-4 py-2 text-sm font-semibold text-white shadow-sm transition-transform hover:scale-[1.03] hover:bg-brandDark"
+          >
+            Hemen Sipariş Ver
+          </Link>
         </div>
       </div>
     </header>

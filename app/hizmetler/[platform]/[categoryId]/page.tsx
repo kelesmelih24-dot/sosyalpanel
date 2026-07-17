@@ -26,10 +26,6 @@ export default async function CategoryPage({
     .eq("is_active", true)
     .order("price_per_1000");
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
   return (
     <div className="min-h-screen bg-paper">
       <PublicHeader />
@@ -66,22 +62,12 @@ export default async function CategoryPage({
                     <span className="text-xs font-sans font-normal text-slateMute"> / 1000</span>
                   </span>
                 </div>
-                <div className="mt-3 flex flex-col gap-2">
+                <div className="mt-3">
                   <Link
                     href={`/misafir-siparis?service=${s.id}`}
-                    className="rounded-full bg-brand px-4 py-2 text-center text-sm font-semibold text-white transition-colors hover:bg-brandDark"
+                    className="block rounded-full bg-brand px-4 py-2 text-center text-sm font-semibold text-white transition-colors hover:bg-brandDark"
                   >
-                    Üye Olmadan Sipariş Ver
-                  </Link>
-                  <Link
-                    href={
-                      user
-                        ? `/dashboard/siparis-ver?service=${s.id}`
-                        : `/giris?next=${encodeURIComponent(`/dashboard/siparis-ver?service=${s.id}`)}`
-                    }
-                    className="rounded-full border border-brand px-4 py-2 text-center text-sm font-semibold text-brand transition-colors hover:bg-brandSoft"
-                  >
-                    {user ? "Panelden Sipariş Ver" : "Üye Ol ve Sipariş Ver"}
+                    Sipariş Ver
                   </Link>
                 </div>
               </div>

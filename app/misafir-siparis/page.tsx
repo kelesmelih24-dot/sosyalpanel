@@ -4,6 +4,7 @@ import { Suspense, useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { PublicHeader } from "@/components/PublicHeader";
 import { createClient } from "@/lib/supabase/client";
+import { BANK_INFO } from "@/lib/constants";
 
 type Service = {
   id: number;
@@ -23,6 +24,7 @@ function MisafirSiparisForm() {
   const [quantity, setQuantity] = useState<number>(0);
   const [email, setEmail] = useState("");
   const [method, setMethod] = useState("havale");
+  const [dekont, setDekont] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<any>(null);
@@ -49,12 +51,19 @@ function MisafirSiparisForm() {
     if (quantity < service.min_quantity || quantity > service.max_quantity) {
       return setError(`Miktar ${service.min_quantity} ile ${service.max_quantity} arasında olmalı.`);
     }
+    if (!dekont) {
+      return setError("Ödeme dekontunu (fotoğraf/PDF) yüklemen gerekiyor.");
+    }
     setLoading(true);
-    const res = await fetch("/api/guest-orders", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ service_id: service.id, link, quantity, guest_email: email, payment_method: method }),
-    });
+    const fd = new FormData();
+    fd.append("service_id", String(service.id));
+    fd.append("link", link);
+    fd.append("quantity", String(quantity));
+    fd.append("guest_email", email);
+    fd.append("payment_method", method);
+    fd.append("dekont", dekont);
+
+    const res = await fetch("/api/guest-orders", { method: "POST", body: fd });
     const data = await res.json();
     setLoading(false);
     if (!res.ok) {
@@ -68,7 +77,7 @@ function MisafirSiparisForm() {
     return (
       <div className="mx-auto max-w-lg px-5 py-16 text-center text-slateMute">
         Bir hizmet seçilmedi. Lütfen{" "}
-        <a href="/" className="text-brand hover:underline">hizmetler sayfasından</a> bir paket seç.
+        <a href="/#hizmetler" className="text-brand hover:underline">hizmetler sayfasından</a> bir paket seç.
       </div>
     );
   }
@@ -83,18 +92,11 @@ function MisafirSiparisForm() {
             Sipariş numaran: <span className="font-mono font-bold text-brand">#{result.id}</span>
           </p>
           <p className="mt-3 text-sm text-slateMute">
-            Ödemeni aşağıdaki bilgilerle yaptıktan sonra ekibimiz onaylayacak ve siparişin işleme girecek.
-            Durumunu dilediğin zaman{" "}
+            Dekontun ekibimize ulaştı, kısa süre içinde kontrol edip onaylayacağız. Onaylanınca siparişin
+            otomatik işleme girer. Durumunu dilediğin zaman{" "}
             <a href="/siparis-sorgula" className="text-brand hover:underline">Sipariş Sorgula</a> sayfasından,
             sipariş numaranı ve e-postanı girerek takip edebilirsin.
           </p>
-          <div className="mt-4 rounded-lg border border-border2 bg-white p-4 text-left text-sm text-slateMute">
-            <p className="font-medium text-slate">Havale / EFT bilgileri</p>
-            <p className="mt-2">Alıcı: SosyalPanel Ltd. Şti.</p>
-            <p>IBAN: TR00 0000 0000 0000 0000 0000 00</p>
-            <p>Açıklama: Sipariş #{result.id} yazmayı unutma.</p>
-            <p className="mt-2 font-mono font-bold text-brand">Tutar: ₺{Number(result.charge).toFixed(2)}</p>
-          </div>
         </div>
       </div>
     );
@@ -102,9 +104,9 @@ function MisafirSiparisForm() {
 
   return (
     <div className="mx-auto max-w-lg px-5 py-16">
-      <h1 className="text-center font-display text-2xl font-bold text-slate">Üye Olmadan Sipariş Ver</h1>
+      <h1 className="text-center font-display text-2xl font-bold text-slate">Sipariş Ver</h1>
       <p className="mt-2 text-center text-slateMute">
-        Hesap oluşturmadan sipariş verebilirsin. Ödemeni yaptıktan sonra ekibimiz onaylayıp işleme alacak.
+        Üye olmana gerek yok. Ödemeni yap, dekontunu yükle — onaylandığında siparişin işleme girsin.
       </p>
 
       {service && (
@@ -116,6 +118,13 @@ function MisafirSiparisForm() {
           </div>
         </div>
       )}
+
+      <div className="mt-4 rounded-lg border border-border2 bg-white p-4 text-sm text-slateMute">
+        <p className="font-medium text-slate">Ödeme bilgileri</p>
+        <p className="mt-2">Alıcı: {BANK_INFO.accountName}</p>
+        <p>IBAN: {BANK_INFO.iban}</p>
+        <p>Banka: {BANK_INFO.bankName}</p>
+      </div>
 
       <form onSubmit={handleSubmit} className="mt-6 flex flex-col gap-4 rounded-2xl border border-border2 bg-paper p-6 shadow-sm">
         <div>
@@ -160,6 +169,16 @@ function MisafirSiparisForm() {
             <option value="kripto">Kripto</option>
           </select>
         </div>
+        <div>
+          <label className="mb-1.5 block text-sm text-slateMute">Ödeme Dekontu (fotoğraf veya PDF)</label>
+          <input
+            type="file"
+            required
+            accept="image/*,.pdf"
+            onChange={(e) => setDekont(e.target.files?.[0] ?? null)}
+            className="w-full rounded-lg border border-border2 bg-white px-3.5 py-2.5 text-slate file:mr-3 file:rounded-lg file:border-0 file:bg-brandSoft file:px-3 file:py-1.5 file:text-brand focus:outline-none focus:ring-2 focus:ring-brand"
+          />
+        </div>
 
         <div className="flex items-center justify-between rounded-lg border border-border2 bg-blush px-4 py-3">
           <span className="text-sm text-slateMute">Toplam Tutar</span>
@@ -173,12 +192,11 @@ function MisafirSiparisForm() {
           disabled={loading || !service}
           className="rounded-lg bg-brand px-4 py-2.5 text-sm font-semibold text-white transition-transform hover:scale-[1.02] hover:bg-brandDark disabled:opacity-60"
         >
-          {loading ? "Gönderiliyor…" : "Sipariş Talebini Gönder"}
+          {loading ? "Gönderiliyor…" : "Dekontu Gönder"}
         </button>
 
         <p className="text-center text-xs text-slateMute">
-          Bakiye biriktirip daha hızlı sipariş vermek ister misin?{" "}
-          <a href="/kayit" className="text-brand hover:underline">Ücretsiz üye ol</a>
+          Sorun yaşarsan bize <a href="/iletisim" className="text-brand hover:underline">iletişim</a> sayfasından ulaşabilirsin.
         </p>
       </form>
     </div>

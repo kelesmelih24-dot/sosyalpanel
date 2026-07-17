@@ -20,14 +20,29 @@ function GirisForm() {
     e.preventDefault();
     setLoading(true);
     setError(null);
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
-    setLoading(false);
+    const { data: signInData, error } = await supabase.auth.signInWithPassword({ email, password });
     if (error) {
+      setLoading(false);
       setError("E-posta veya şifre hatalı. Lütfen tekrar dene.");
       return;
     }
+
     const next = searchParams.get("next");
-    router.push(next && next.startsWith("/") ? next : "/dashboard");
+    if (next && next.startsWith("/")) {
+      setLoading(false);
+      router.push(next);
+      router.refresh();
+      return;
+    }
+
+    // No explicit redirect requested — send admins straight to the admin panel.
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("role")
+      .eq("id", signInData.user!.id)
+      .single();
+    setLoading(false);
+    router.push(profile?.role === "admin" ? "/admin" : "/");
     router.refresh();
   }
 
@@ -35,8 +50,8 @@ function GirisForm() {
     <div className="flex min-h-screen items-center justify-center bg-void bg-grad-hero px-5">
       <div className="w-full max-w-sm rounded-2xl border border-line bg-panel p-8">
         <Link href="/" className="flex items-center gap-2 font-display text-lg font-bold text-ink"><Image src="/logo-icon.png" alt="" width={24} height={24} className="h-6 w-6" />SosyalPanel</Link>
-        <h1 className="mt-4 font-display text-xl font-bold text-ink">Tekrar hoş geldin</h1>
-        <p className="mt-1 text-sm text-mute">Hesabına giriş yap ve siparişlerine devam et.</p>
+        <h1 className="mt-4 font-display text-xl font-bold text-ink">Yönetici Girişi</h1>
+        <p className="mt-1 text-sm text-mute">Bu sayfa panel yöneticileri içindir. Sipariş vermek için üye olmana gerek yok.</p>
 
         <form onSubmit={handleSubmit} className="mt-6 flex flex-col gap-4">
           <div>
@@ -75,8 +90,7 @@ function GirisForm() {
         </form>
 
         <p className="mt-6 text-center text-sm text-mute">
-          Hesabın yok mu?{" "}
-          <Link href="/kayit" className="font-medium text-cyan hover:underline">Kayıt ol</Link>
+          <Link href="/" className="font-medium text-cyan hover:underline">← Ana sayfaya dön</Link>
         </p>
       </div>
     </div>

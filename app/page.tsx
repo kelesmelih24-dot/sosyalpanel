@@ -5,36 +5,37 @@ import { HeroIllustration } from "@/components/HeroIllustration";
 import { createAdminClient } from "@/lib/supabase/server";
 
 const platforms = [
-  { key: "instagram", name: "Instagram" },
-  { key: "tiktok", name: "TikTok" },
-  { key: "youtube", name: "YouTube" },
-  { key: "twitter", name: "X / Twitter" },
-  { key: "facebook", name: "Facebook" },
-  { key: "telegram", name: "Telegram" },
-  { key: "spotify", name: "Spotify" },
-  { key: "pinterest", name: "Pinterest" },
-  { key: "linkedin", name: "LinkedIn" },
-  { key: "soundcloud", name: "SoundCloud" },
+  { key: "instagram", name: "Instagram", color: "#D6249F" },
+  { key: "twitter", name: "Twitter", color: "#1DA1F2" },
+  { key: "tiktok", name: "TikTok", color: "#010101" },
+  { key: "youtube", name: "YouTube", color: "#FF0000" },
+  { key: "facebook", name: "Facebook", color: "#1877F2" },
+  { key: "spotify", name: "Spotify", color: "#1DB954" },
+  { key: "telegram", name: "Telegram", color: "#26A5E4" },
+  { key: "twitch", name: "Twitch", color: "#9146FF" },
+  { key: "pinterest", name: "Pinterest", color: "#E60023" },
+  { key: "linkedin", name: "LinkedIn", color: "#0A66C2" },
+  { key: "soundcloud", name: "SoundCloud", color: "#FF5500" },
 ];
 
 const steps = [
-  { no: "01", title: "Hesap oluştur", text: "E-postanla saniyeler içinde kayıt ol." },
-  { no: "02", title: "Bakiye yükle", text: "Havale veya kripto ile bakiyeni anında hesabına yansıt." },
-  { no: "03", title: "Hizmeti seç, linki yapıştır", text: "Platform, miktar ve hedef linki gir." },
-  { no: "04", title: "Siparişini takip et", text: "Durumu panelden veya sipariş sorgula sayfasından canlı izle." },
+  { no: "01", title: "Hizmeti seç", text: "Platformunu ve paketini seç, hedef linki ve miktarı gir." },
+  { no: "02", title: "Ödemeyi yap", text: "Gösterilen banka hesabına siparişin tutarını gönder." },
+  { no: "03", title: "Dekontu yükle", text: "Ödeme onayını (dekont/ekran görüntüsü) sipariş formuna yükle." },
+  { no: "04", title: "Onaylansın, teslim olsun", text: "Ekibimiz dekontu onaylayınca siparişin otomatik işleme girer." },
 ];
 
 const faqs = [
-  { q: "Ödeme yaptıktan sonra bakiyem ne zaman yüklenir?", a: "Havale ve kripto ödemelerinde bakiye, dekont onayından sonra birkaç dakika içinde hesabına yansır." },
+  { q: "Üye olmam gerekiyor mu?", a: "Hayır. Hesap açmadan, hizmeti seçip link+miktar+e-posta bilgisiyle direkt sipariş verebilirsin." },
+  { q: "Ödemeyi nasıl yapıyorum?", a: "Sipariş oluşturduğunda sana banka hesap bilgilerimiz gösterilir. Ödemeyi yaptıktan sonra dekontunu (banka makbuzu veya ekran görüntüsü) sipariş formuna yüklemen yeterli." },
+  { q: "Dekontu yükledikten sonra ne kadar sürede onaylanır?", a: "Dekontun yüklendiği anda ekibimize anında bildirim gider. Genellikle kısa süre içinde onaylanıp siparişin işleme alınır." },
+  { q: "Siparişimin durumunu nasıl takip ederim?", a: "'Sipariş Sorgula' sayfasından sipariş numaranı ve e-postanı girerek anlık durumu görebilirsin." },
   { q: "Siparişim düşerse ne olur?", a: "Çoğu hizmette düşme garantisi vardır; garanti süresi içinde düşen adetler otomatik olarak tamamlanır." },
-  { q: "Üye olmadan sipariş verebilir miyim?", a: "Evet. Hizmet sayfasında 'Üye Olmadan Sipariş Ver' seçeneğiyle hesap açmadan sipariş verebilir, durumunu 'Sipariş Sorgula' sayfasından takip edebilirsin. Bakiye biriktirip daha hızlı sipariş vermek istersen üyelik de her zaman ücretsizdir." },
-  { q: "Yanlış link girdim, iptal edebilir miyim?", a: "Sipariş 'beklemede' durumundayken destek ekibine yazarak iptal talep edebilirsin." },
 ];
 
 export default async function LandingPage() {
   const admin = createAdminClient();
   const { count: orderCount } = await admin.from("orders").select("id", { count: "exact", head: true });
-  const { count: userCount } = await admin.from("profiles").select("id", { count: "exact", head: true });
   const { count: completedCount } = await admin
     .from("orders")
     .select("id", { count: "exact", head: true })
@@ -52,7 +53,6 @@ export default async function LandingPage() {
 
   const stats = [
     { label: "Teslim Edilen Sipariş", value: (orderCount ?? 0).toLocaleString("tr-TR") + "+" },
-    { label: "Kayıtlı Üye", value: (userCount ?? 0).toLocaleString("tr-TR") + "+" },
     { label: "Tamamlanan Sipariş", value: (completedCount ?? 0).toLocaleString("tr-TR") + "+" },
     { label: "Desteklenen Platform", value: String(platforms.length) },
   ];
@@ -73,8 +73,8 @@ export default async function LandingPage() {
               <span className="text-brand">İnsanlara Farkınızı Gösterin!</span>
             </h1>
             <p className="mt-5 max-w-md text-slateMute">
-              Sosyal medyada şimdiye kadar hiç olmadığı kadar güçlüsünüz! Kontrol tamamen sizin elinizde.
-              Hemen platformunuzu ve paketinizi belirleyip sipariş oluşturun.
+              Üye olmadan, hesap açmadan sipariş verebilirsiniz! Hizmeti seç, ödemeni yap, dekontunu yükle —
+              onaylandığında siparişin otomatik işleme girer.
             </p>
 
             {avgRating && (
@@ -86,10 +86,10 @@ export default async function LandingPage() {
             )}
             <div className="mt-8 flex flex-wrap items-center gap-4">
               <Link
-                href="/kayit"
+                href="/#hizmetler"
                 className="rounded-lg bg-brand px-6 py-3 text-sm font-semibold text-white shadow-sm transition-transform hover:scale-[1.03] hover:bg-brandDark"
               >
-                Hemen Başla — Ücretsiz
+                Hemen Sipariş Ver
               </Link>
               <Link href="/siparis-sorgula" className="text-sm font-medium text-slateMute hover:text-brand transition-colors">
                 Sipariş sorgula →
@@ -117,7 +117,7 @@ export default async function LandingPage() {
 
       {/* STATS BAR */}
       <section className="bg-brand">
-        <div className="mx-auto grid max-w-6xl grid-cols-2 gap-6 px-5 py-6 text-white md:grid-cols-4">
+        <div className="mx-auto grid max-w-6xl grid-cols-1 gap-6 px-5 py-6 text-white sm:grid-cols-3">
           {stats.map((s) => (
             <div key={s.label} className="text-center">
               <div className="font-display text-2xl font-bold md:text-3xl">{s.value}</div>
@@ -128,22 +128,21 @@ export default async function LandingPage() {
       </section>
 
       {/* PLATFORMS / HİZMETLER */}
-      <section className="mx-auto max-w-6xl px-5 py-16">
-        <h2 className="text-center font-display text-2xl font-bold text-slate md:text-3xl">Popüler Hizmetler</h2>
+      <section id="hizmetler" className="mx-auto max-w-6xl px-5 py-16">
+        <h2 className="text-center font-display text-2xl font-bold text-slate md:text-3xl">Hizmetlerimiz</h2>
         <p className="mt-2 text-center text-slateMute">Platformunu seç, o platforma özel tüm hizmet kategorilerini gör.</p>
-        <div className="mt-8 grid gap-4 sm:grid-cols-2 md:grid-cols-5">
-          {platforms.slice(0, 5).map((p) => (
+        <div className="mt-8 grid grid-cols-2 gap-4 md:grid-cols-4">
+          {platforms.map((p) => (
             <Link
               key={p.key}
               href={`/hizmetler/${p.key}`}
-              className="group rounded-2xl border border-border2 bg-paper p-5 text-center shadow-sm transition-all hover:-translate-y-1 hover:shadow-md"
+              className="group flex flex-col items-center justify-center gap-3 rounded-2xl py-10 text-center shadow-sm transition-transform hover:-translate-y-1 hover:shadow-lg"
+              style={{ backgroundColor: p.color }}
             >
-              <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-xl bg-brandSoft text-brand">
-                <PlatformIcon platform={p.key} className="h-6 w-6" />
-              </div>
-              <div className="font-display font-semibold text-slate">{p.name}</div>
-              <div className="mt-2 text-sm font-medium text-brand opacity-0 transition-opacity group-hover:opacity-100">
-                İncele →
+              <PlatformIcon platform={p.key} className="h-10 w-10 text-white" />
+              <div>
+                <div className="font-display text-base font-bold uppercase tracking-wide text-white">{p.name}</div>
+                <div className="text-xs text-white/80">Hizmetleri</div>
               </div>
             </Link>
           ))}

@@ -7,12 +7,7 @@ export default async function AdminOverview() {
   // wrong for anyone other than the querying admin's own account.
   const admin = createAdminClient();
 
-  const { count: userCount } = await admin.from("profiles").select("id", { count: "exact", head: true });
   const { count: orderCount } = await admin.from("orders").select("id", { count: "exact", head: true });
-  const { count: pendingTopups } = await admin
-    .from("topup_requests")
-    .select("id", { count: "exact", head: true })
-    .eq("status", "pending");
   const { count: awaitingPaymentOrders } = await admin
     .from("orders")
     .select("id", { count: "exact", head: true })
@@ -30,9 +25,8 @@ export default async function AdminOverview() {
   );
 
   const cards = [
-    { label: "Toplam Kullanıcı", value: userCount ?? 0, accent: "text-cyan" },
     { label: "Toplam Sipariş", value: orderCount ?? 0, accent: "text-magenta" },
-    { label: "Bekleyen Bakiye Talebi", value: pendingTopups ?? 0, accent: "text-amber", href: "/admin/kullanicilar" },
+    { label: "Onay Bekleyen Dekont", value: awaitingPaymentOrders ?? 0, accent: "text-amber", href: "/admin/siparisler" },
     { label: "Toplam Ciro", value: `₺${revenue.toLocaleString("tr-TR", { minimumFractionDigits: 2 })}`, accent: "text-violet" },
   ];
 
@@ -42,7 +36,7 @@ export default async function AdminOverview() {
 
       {(awaitingPaymentOrders ?? 0) > 0 && (
         <div className="mt-4 rounded-lg border border-amber/40 bg-amber/10 px-4 py-3 text-sm text-amber">
-          💳 <strong>{awaitingPaymentOrders}</strong> misafir siparişi ödeme onayı bekliyor.{" "}
+          🧾 <strong>{awaitingPaymentOrders}</strong> sipariş dekont onayı bekliyor.{" "}
           <Link href="/admin/siparisler" className="underline">Siparişler sayfasından kontrol et.</Link>
         </div>
       )}
@@ -55,7 +49,7 @@ export default async function AdminOverview() {
         </div>
       )}
 
-      <div className="mt-6 grid gap-4 sm:grid-cols-2 md:grid-cols-4">
+      <div className="mt-6 grid gap-4 sm:grid-cols-3">
         {cards.map((c) => (
           <Link
             key={c.label}

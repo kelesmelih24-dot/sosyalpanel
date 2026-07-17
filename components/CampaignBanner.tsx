@@ -7,7 +7,7 @@ import { useEffect, useState } from "react";
 // to keep resetting a fake countdown, that's a deceptive "urgency" dark pattern.
 const CAMPAIGN_END = null; // e.g. new Date("2026-08-01T23:59:59+03:00")
 const CAMPAIGN_TEXT = "Yeni üyelere özel ilk siparişte %10 indirim";
-const CAMPAIGN_LINK = "/kayit";
+const CAMPAIGN_LINK = "/#hizmetler";
 
 function useCountdown(target: Date | null) {
   const [remaining, setRemaining] = useState<number | null>(target ? target.getTime() - Date.now() : null);

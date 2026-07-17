@@ -39,7 +39,7 @@ export function orderStatusEmail(params: { orderId: number; serviceName: string;
         <h2>Sipariş durumun güncellendi</h2>
         <p><strong>Sipariş:</strong> #${params.orderId} — ${params.serviceName}</p>
         <p><strong>Yeni durum:</strong> ${label}</p>
-        <p>Detaylar için panelindeki "Siparişlerim" sayfasına göz atabilirsin.</p>
+        <p>Detaylar için "Sipariş Sorgula" sayfasından sipariş numaranı ve e-postanı girerek bakabilirsin.</p>
       </div>
     `,
   };
@@ -52,6 +52,21 @@ export function topupApprovedEmail(amount: number) {
       <div style="font-family:sans-serif;color:#1a1a1a">
         <h2>Bakiyen yüklendi</h2>
         <p>₺${amount.toFixed(2)} tutarındaki bakiye yükleme talebin onaylandı ve hesabına yansıtıldı.</p>
+      </div>
+    `,
+  };
+}
+
+export function guestOrderReceivedEmail(params: { orderId: number; serviceName: string; amount: number }) {
+  return {
+    subject: `Sipariş #${params.orderId} alındı — ödeme onayı bekleniyor`,
+    html: `
+      <div style="font-family:sans-serif;color:#1a1a1a">
+        <h2>Sipariş talebin alındı</h2>
+        <p><strong>Sipariş:</strong> #${params.orderId} — ${params.serviceName}</p>
+        <p><strong>Tutar:</strong> ₺${params.amount.toFixed(2)}</p>
+        <p>Yüklediğin dekont ekibimiz tarafından onaylandığında siparişin otomatik olarak işleme girecek.
+        Durumunu dilediğin zaman "Sipariş Sorgula" sayfasından takip edebilirsin.</p>
       </div>
     `,
   };

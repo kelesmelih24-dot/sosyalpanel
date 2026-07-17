@@ -10,11 +10,11 @@ export default async function AdminLayout({ children }: { children: React.ReactN
   if (!user) redirect("/giris");
 
   const { data: profile } = await supabase.from("profiles").select("role").eq("id", user.id).single();
-  if (profile?.role !== "admin") redirect("/dashboard");
+  if (profile?.role !== "admin") redirect("/");
 
   return (
     <div className="flex min-h-screen bg-void">
-      <Sidebar variant="admin" />
+      <Sidebar />
       <div className="flex-1">
         <header className="flex items-center justify-between border-b border-line px-8 py-4">
           <div>

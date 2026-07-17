@@ -24,7 +24,28 @@ admin yönetim paneli içerir.
   bile bakiye ikinci kez iade edilmez
 - Kullanım Şartları, Gizlilik Politikası ve KVKK Aydınlatma Metni şablon sayfaları (footer'da bağlantılı, kayıt formunda onay kutusu ile)
 - Admin paneli: hizmet CRUD, tedarikçi yönetimi, sipariş durumu güncelleme, kullanıcı/bakiye yönetimi
-- Renkli, koyu temalı, "canlı istatistik" hero bölümüne sahip bir vitrin sayfası
+- **Açık temalı, pembe/magenta marka renkli vitrin sitesi** (rasyenmedya.com tarzı): üst iletişim çubuğu, platform bazlı "Hizmetler" açılır menüsü, her platform için gerçek verilerle çalışan kategori ve hizmet listeleme sayfaları (`/hizmetler/[platform]/[kategori]`), üye olmadan sipariş sorgulama (`/siparis-sorgula`)
+- Admin/kullanıcı paneli (dashboard) ayrı, koyu temalı bir uygulama arayüzü olarak kalır — bu bilinçli bir tercih, çoğu SaaS'ta vitrin sitesi ile uygulama paneli farklı görünür
+
+## Vitrin sitesindeki yer tutucular (canlıya almadan önce değiştir)
+
+- `components/PublicHeader.tsx` ve birkaç sayfada geçen WhatsApp numarası (`905000000000`) ve
+  `destek@sosyalpanel.com` adresi gerçek bilgilerinle değiştirilmeli
+- `/iletisim` ve `/hakkimizda` sayfalarındaki `[...]` içindeki alanları doldur
+- Ana sayfadaki platform ikonlarının bağlandığı kategoriler `supabase/schema.sql`'deki seed
+  verisiyle geliyor — admin panelinden gerçek hizmetlerini eklemeyi unutma, yoksa kategori
+  sayfaları "henüz hizmet eklenmedi" gösterir
+- **Zaten kurulu bir Supabase projen varsa**: `schema.sql`'i tekrar baştan çalıştırma,
+  var olan kategoriler kopyalanır. Bunun yerine SQL Editor'de sadece şunu çalıştır:
+  ```sql
+  insert into public.categories (name, platform, sort_order) values
+    ('Twitter Takipçi', 'twitter', 7),
+    ('Facebook Beğeni', 'facebook', 8),
+    ('Spotify Dinlenme', 'spotify', 9),
+    ('Pinterest Takipçi', 'pinterest', 10),
+    ('LinkedIn Takipçi', 'linkedin', 11),
+    ('SoundCloud Dinlenme', 'soundcloud', 12);
+  ```
 
 ## Tedarikçi ekleme
 

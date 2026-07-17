@@ -1,12 +1,12 @@
 import Link from "next/link";
-import { Navbar } from "@/components/Navbar";
+import { PublicHeader } from "@/components/PublicHeader";
 
 export default function KvkkAydinlatmaPage() {
   return (
-    <div className="min-h-screen bg-void">
-      <Navbar />
-      <div className="mx-auto max-w-2xl px-5 py-16 text-mute">
-        <h1 className="font-display text-3xl font-bold text-ink">KVKK Aydınlatma Metni</h1>
+    <div className="min-h-screen bg-paper">
+      <PublicHeader />
+      <div className="mx-auto max-w-2xl px-5 py-16 text-slateMute">
+        <h1 className="font-display text-3xl font-bold text-slate">KVKK Aydınlatma Metni</h1>
 
         <div className="mt-4 rounded-lg border border-amber/40 bg-amber/10 p-4 text-sm text-amber">
           <strong>Önemli:</strong> Bu metin 6698 sayılı Kişisel Verilerin Korunması Kanunu kapsamında
@@ -16,22 +16,22 @@ export default function KvkkAydinlatmaPage() {
 
         <div className="mt-8 flex flex-col gap-6 text-sm leading-relaxed">
           <section>
-            <h2 className="font-display font-semibold text-ink">Veri Sorumlusu</h2>
+            <h2 className="font-display font-semibold text-slate">Veri Sorumlusu</h2>
             <p className="mt-2">[Şirket unvanı], 6698 sayılı KVKK uyarınca "Veri Sorumlusu" sıfatıyla
               kişisel verilerinizi aşağıda açıklanan kapsamda işlemektedir.</p>
           </section>
           <section>
-            <h2 className="font-display font-semibold text-ink">İşlenen Kişisel Veriler</h2>
+            <h2 className="font-display font-semibold text-slate">İşlenen Kişisel Veriler</h2>
             <p className="mt-2">Ad soyad, e-posta adresi, sipariş ve işlem geçmişi, bakiye yükleme
               notlarında paylaşılan bilgiler.</p>
           </section>
           <section>
-            <h2 className="font-display font-semibold text-ink">İşleme Amaçları ve Hukuki Sebep</h2>
+            <h2 className="font-display font-semibold text-slate">İşleme Amaçları ve Hukuki Sebep</h2>
             <p className="mt-2">Üyelik sözleşmesinin kurulması ve ifası, hizmetlerin sunulması, yasal
               yükümlülüklerin yerine getirilmesi (KVKK m.5/2).</p>
           </section>
           <section>
-            <h2 className="font-display font-semibold text-ink">Veri Sahibinin Hakları (KVKK m.11)</h2>
+            <h2 className="font-display font-semibold text-slate">Veri Sahibinin Hakları (KVKK m.11)</h2>
             <ul className="mt-2 list-disc pl-5">
               <li>Kişisel verinizin işlenip işlenmediğini öğrenme</li>
               <li>İşlenmişse buna ilişkin bilgi talep etme</li>
@@ -44,13 +44,13 @@ export default function KvkkAydinlatmaPage() {
             </ul>
           </section>
           <section>
-            <h2 className="font-display font-semibold text-ink">Başvuru Yöntemi</h2>
+            <h2 className="font-display font-semibold text-slate">Başvuru Yöntemi</h2>
             <p className="mt-2">Yukarıdaki haklarınızı kullanmak için [başvuru e-postası / adresi] üzerinden
               bize ulaşabilirsiniz.</p>
           </section>
         </div>
 
-        <Link href="/" className="mt-10 inline-block text-sm text-cyan hover:underline">← Ana sayfaya dön</Link>
+        <Link href="/" className="mt-10 inline-block text-sm text-brand hover:underline">← Ana sayfaya dön</Link>
       </div>
     </div>
   );

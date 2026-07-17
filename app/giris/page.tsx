@@ -2,12 +2,14 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
+import { Suspense } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 
-export default function GirisPage() {
+function GirisForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const supabase = createClient();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -24,7 +26,8 @@ export default function GirisPage() {
       setError("E-posta veya şifre hatalı. Lütfen tekrar dene.");
       return;
     }
-    router.push("/dashboard");
+    const next = searchParams.get("next");
+    router.push(next && next.startsWith("/") ? next : "/dashboard");
     router.refresh();
   }
 
@@ -77,5 +80,13 @@ export default function GirisPage() {
         </p>
       </div>
     </div>
+  );
+}
+
+export default function GirisPage() {
+  return (
+    <Suspense fallback={null}>
+      <GirisForm />
+    </Suspense>
   );
 }

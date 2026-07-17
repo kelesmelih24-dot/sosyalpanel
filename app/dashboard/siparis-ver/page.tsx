@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useEffect, useMemo, useState, Suspense } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 
 type Service = {
@@ -16,9 +16,11 @@ type Service = {
 
 type Category = { id: number; name: string; platform: string };
 
-export default function SiparisVerPage() {
+function SiparisVerForm() {
   const supabase = createClient();
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const preselectServiceId = searchParams.get("service");
 
   const [categories, setCategories] = useState<Category[]>([]);
   const [services, setServices] = useState<Service[]>([]);
@@ -39,9 +41,16 @@ export default function SiparisVerPage() {
         .eq("is_active", true);
       setCategories(cats ?? []);
       setServices(svcs ?? []);
+      if (preselectServiceId) {
+        const match = (svcs ?? []).find((s) => String(s.id) === preselectServiceId);
+        if (match) {
+          setServiceId(match.id);
+          if (match.category_id) setCategoryId(match.category_id);
+        }
+      }
     }
     load();
-  }, []);
+  }, [preselectServiceId]);
 
   const filteredServices = useMemo(
     () => (categoryId ? services.filter((s) => s.category_id === categoryId) : services),
@@ -163,5 +172,13 @@ export default function SiparisVerPage() {
         </button>
       </form>
     </div>
+  );
+}
+
+export default function SiparisVerPage() {
+  return (
+    <Suspense fallback={null}>
+      <SiparisVerForm />
+    </Suspense>
   );
 }

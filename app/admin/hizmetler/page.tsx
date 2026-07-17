@@ -212,7 +212,7 @@ export default function AdminHizmetlerPage() {
             onChange={(e) => setNewCategory({ ...newCategory, platform: e.target.value })}
             className="rounded-lg border border-line bg-void px-3.5 py-2.5 text-ink focus-ring"
           >
-            {["instagram", "tiktok", "youtube", "twitter", "telegram", "diger"].map((p) => (
+            {["instagram", "tiktok", "youtube", "twitter", "telegram", "facebook", "spotify", "pinterest", "linkedin", "soundcloud", "twitch", "diger"].map((p) => (
               <option key={p} value={p}>{p}</option>
             ))}
           </select>

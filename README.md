@@ -51,8 +51,11 @@ içindir, müşteriler hiçbir zaman hesap açmaz veya giriş yapmaz.
 2. **SQL Editor**'de `supabase/schema.sql` dosyasının tamamını çalıştır (tablolar,
    RLS, fonksiyonlar, storage bucket). Bu dosya güvenle tekrar tekrar çalıştırılabilir.
 3. Ardından `supabase/seed_services.sql` dosyasını çalıştır — kategorileri
-   genişletir ve ~2000 yer tutucu hizmeti 200 ₺'den başlayan fiyatlarla oluşturur.
-   Bu dosya da güvenle tekrar çalıştırılabilir (kopya oluşturmaz).
+   genişletir ve ~2000 hizmeti gerçekçi açıklamalar ve çeşitli miktar
+   aralıklarıyla, 200 ₺'den başlayan fiyatlarla oluşturur. Bu dosyayı istediğin
+   kadar tekrar çalıştırabilirsin: aynı isimdeki hizmet zaten varsa açıklama/
+   fiyat/miktar bilgilerini bu script'teki güncel değerlerle yeniden yazar
+   (kopya oluşturmaz, önceki sürümde eklenmiş tekdüze verileri de düzeltir).
 4. **Project Settings → API**'den Project URL, `anon public` ve `service_role`
    anahtarlarını al.
 

@@ -66,7 +66,6 @@ function MisafirSiparisForm() {
       return setError("Devam etmek için Mesafeli Satış Sözleşmesi'ni ve Ön Bilgilendirme Formu'nu kabul etmelisin.");
     }
     setLoading(true);
-    const refCode = typeof window !== "undefined" ? localStorage.getItem("ref_code") : null;
     const res = await fetch("/api/guest-orders", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -77,7 +76,6 @@ function MisafirSiparisForm() {
         guest_email: email,
         payment_method: method,
         coupon_code: couponCode || undefined,
-        ref_code: refCode || undefined,
       }),
     });
     const data = await res.json();

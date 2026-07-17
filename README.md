@@ -33,6 +33,18 @@ gösterildiği için müşteri e-posta gelmese de sipariş ekranından devam ede
 ama e-postayı kurman şiddetle önerilir. Ayrıca `NEXT_PUBLIC_SITE_URL` değişkeninin
 doğru (gerçek) domain'ine ayarlı olduğundan emin ol — e-postadaki link bu değeri kullanır.
 
+**⚠️ Domain doğrulaman gerekiyor (kritik):** Bir domain doğrulamadan Resend'in
+`onboarding@resend.dev` adresi **sadece kendi Resend hesabına kayıtlı e-postana**
+(kayıt olurken kullandığın adrese) e-posta gönderebilir — başka hiçbir e-posta
+adresine (yani gerçek müşterilerine) e-posta GİTMEZ. Bunu düzeltmek için:
+1. Bir domain satın al (yoksa Cloudflare Registrar veya Namecheap gibi ucuz
+   sağlayıcılardan alabilirsin, ~yılda 200-400₺ civarı)
+2. Resend Dashboard → **Domains → Add Domain**, verdiği DNS kayıtlarını
+   domain sağlayıcındaki DNS ayarlarına ekle (genelde 15-30 dk içinde doğrulanır)
+3. `RESEND_FROM_EMAIL`'i `SosyalPanel <bildirim@seninalanadin.com>` şeklinde güncelle
+4. Domain doğrulanana kadar sistemi sadece **kendi e-postanla** test edebilirsin,
+   gerçek müşteriye açmadan önce bu adımı tamamlaman gerekiyor.
+
 ## Özellikler
 
 - **Üye olmadan sipariş + dekont yükleme**: `/misafir-siparis` — link, miktar,

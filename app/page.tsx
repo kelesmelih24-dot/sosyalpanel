@@ -183,10 +183,18 @@ export default async function LandingPage() {
       </section>
 
       {/* REVIEWS — real, admin-curated only; no fabricated testimonials */}
-      {reviewCount > 0 && (
-        <section className="bg-blush py-16">
-          <div className="mx-auto max-w-6xl px-5">
-            <h2 className="text-center font-display text-2xl font-bold text-slate md:text-3xl">Müşteri Yorumları</h2>
+      <section className="bg-blush py-16">
+        <div className="mx-auto max-w-6xl px-5">
+          <div className="flex flex-col items-center justify-between gap-4 sm:flex-row">
+            <h2 className="font-display text-2xl font-bold text-slate md:text-3xl">Müşteri Yorumları</h2>
+            <Link
+              href="/degerlendirme"
+              className="rounded-lg bg-brand px-5 py-2.5 text-sm font-semibold text-white transition-transform hover:scale-[1.03] hover:bg-brandDark"
+            >
+              ⭐ Değerlendirme Bırak
+            </Link>
+          </div>
+          {reviewCount > 0 ? (
             <div className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
               {reviews!.map((r: any, i: number) => (
                 <div key={i} className="rounded-2xl border border-border2 bg-paper p-5 shadow-sm">
@@ -196,9 +204,11 @@ export default async function LandingPage() {
                 </div>
               ))}
             </div>
-          </div>
-        </section>
-      )}
+          ) : (
+            <p className="mt-6 text-center text-slateMute">Henüz değerlendirme yok — ilk yorumu sen bırak!</p>
+          )}
+        </div>
+      </section>
 
       {/* FAQ */}
       <section className="mx-auto max-w-6xl px-5 py-16">

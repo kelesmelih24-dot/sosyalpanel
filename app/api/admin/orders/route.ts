@@ -1,10 +1,8 @@
 import { NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/server";
 import { requireAdmin } from "@/lib/supabase/require-admin";
-import { sendEmail, orderStatusEmail, referralRewardEmail } from "@/lib/email";
+import { sendEmail, orderStatusEmail } from "@/lib/email";
 import { providerPlaceOrder } from "@/lib/smmProvider";
-import { grantReferralRewardIfCompleted } from "@/lib/referrals";
-import { REFERRAL_DISCOUNT_PERCENT } from "@/lib/constants";
 
 export async function PATCH(request: Request) {
   const check = await requireAdmin();
@@ -69,14 +67,6 @@ export async function PATCH(request: Request) {
   if (customerEmail && previous.status !== status && ["completed", "partial", "canceled", "refunded"].includes(status)) {
     const { subject, html } = orderStatusEmail({ orderId: id, serviceName, status });
     await sendEmail(customerEmail, subject, html);
-  }
-
-  if (status === "completed" && previous.status !== "completed") {
-    const reward = await grantReferralRewardIfCompleted(admin, id);
-    if (reward) {
-      const { subject, html } = referralRewardEmail({ code: reward.code, percent: REFERRAL_DISCOUNT_PERCENT });
-      await sendEmail(reward.referrerEmail, subject, html);
-    }
   }
 
   return NextResponse.json({ order: data });

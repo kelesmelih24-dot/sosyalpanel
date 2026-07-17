@@ -149,21 +149,6 @@ export function orderExpiredEmail(params: { orderId: number; serviceName: string
   };
 }
 
-export function referralRewardEmail(params: { code: string; percent: number }) {
-  return {
-    subject: `Referans ödülün hazır — %${params.percent} indirim kodu 🎁`,
-    html: `
-      <div style="font-family:sans-serif;color:#1a1a1a">
-        <h2>Arkadaşın siparişini tamamladı!</h2>
-        <p>Davet ettiğin arkadaşının siparişi başarıyla tamamlandığı için sana bir sonraki siparişinde
-        geçerli <strong>%${params.percent} indirim kodu</strong> tanımladık:</p>
-        <p style="font-size:20px;font-weight:700;letter-spacing:2px">${params.code}</p>
-        <p>Sipariş verirken kupon kodu alanına yapıştırman yeterli.</p>
-      </div>
-    `,
-  };
-}
-
 export function reviewDiscountEmail(params: { code: string; percent: number }) {
   return {
     subject: `Değerlendirmen için teşekkürler — %${params.percent} indirim kodun 🎁`,

@@ -78,7 +78,7 @@ function DegerlendirmeForm() {
           <label className="mb-1.5 block text-sm text-slateMute">Puanın</label>
           <div className="flex gap-1 text-2xl">
             {[1, 2, 3, 4, 5].map((n) => (
-              <button key={n} type="button" onClick={() => setRating(n)} className={n <= rating ? "text-amber-500" : "text-border2"}>
+              <button key={n} type="button" onClick={() => setRating(n)} className={n <= rating ? "text-amber-500" : "text-gray-300"}>
                 ★
               </button>
             ))}

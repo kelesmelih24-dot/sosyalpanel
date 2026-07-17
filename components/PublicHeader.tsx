@@ -2,11 +2,10 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { Suspense, useState } from "react";
+import { useState } from "react";
 import { CampaignBanner } from "@/components/CampaignBanner";
 import { FloatingWhatsapp } from "@/components/FloatingWhatsapp";
 import { CookieBanner } from "@/components/CookieBanner";
-import { ReferralCapture } from "@/components/ReferralCapture";
 import { AiChatWidget } from "@/components/AiChatWidget";
 import { DarkModeToggle } from "@/components/DarkModeToggle";
 
@@ -100,7 +99,6 @@ export function PublicHeader() {
                 <div className="absolute left-0 top-full flex w-56 flex-col gap-1 rounded-xl border border-border2 bg-paper p-3 shadow-lg">
                   <Link href="/hakkimizda" className="rounded-lg px-3 py-2 text-sm text-slate hover:bg-brandSoft hover:text-brand transition-colors">Hakkımızda</Link>
                   <Link href="/yardim" className="rounded-lg px-3 py-2 text-sm text-slate hover:bg-brandSoft hover:text-brand transition-colors">Yardım Merkezi</Link>
-                  <Link href="/referans" className="rounded-lg px-3 py-2 text-sm text-slate hover:bg-brandSoft hover:text-brand transition-colors">Arkadaşını Getir</Link>
                   <Link href="/kullanim-sartlari" className="rounded-lg px-3 py-2 text-sm text-slate hover:bg-brandSoft hover:text-brand transition-colors">Kullanım Şartları</Link>
                   <Link href="/gizlilik-politikasi" className="rounded-lg px-3 py-2 text-sm text-slate hover:bg-brandSoft hover:text-brand transition-colors">Gizlilik Politikası</Link>
                   <Link href="/kvkk-aydinlatma" className="rounded-lg px-3 py-2 text-sm text-slate hover:bg-brandSoft hover:text-brand transition-colors">KVKK Aydınlatma Metni</Link>
@@ -138,9 +136,6 @@ export function PublicHeader() {
     <FloatingWhatsapp />
     <AiChatWidget />
     <CookieBanner />
-    <Suspense fallback={null}>
-      <ReferralCapture />
-    </Suspense>
-    </>
+</>
   );
 }

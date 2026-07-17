@@ -70,7 +70,7 @@ export function AiChatWidget() {
               value={input}
               onChange={(e) => setInput(e.target.value)}
               placeholder="Bir soru yaz…"
-              className="flex-1 rounded-lg border border-border2 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand"
+              className="flex-1 rounded-lg border border-border2 bg-white px-3 py-2 text-sm text-slate focus:outline-none focus:ring-2 focus:ring-brand"
             />
             <button
               type="submit"

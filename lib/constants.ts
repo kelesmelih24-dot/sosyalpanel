@@ -23,7 +23,3 @@ export const WELCOME_DISCOUNT_PERCENT = 10;
 // Review-reward discount code: percent off, and how long the code lasts.
 export const REVIEW_DISCOUNT_PERCENT = 5;
 export const REVIEW_DISCOUNT_VALID_DAYS = 30;
-
-// Referral program: percent off for both referrer and referred-in customer.
-export const REFERRAL_DISCOUNT_PERCENT = 5;
-export const REFERRAL_MAX_USES_PER_CODE = 10;

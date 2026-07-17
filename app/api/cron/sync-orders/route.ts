@@ -1,10 +1,8 @@
 import { NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/server";
 import { providerOrderStatus, providerBalance, normalizeProviderStatus } from "@/lib/smmProvider";
-import { sendEmail, orderStatusEmail, referralRewardEmail } from "@/lib/email";
+import { sendEmail, orderStatusEmail } from "@/lib/email";
 import { sendAlert } from "@/lib/alert";
-import { grantReferralRewardIfCompleted } from "@/lib/referrals";
-import { REFERRAL_DISCOUNT_PERCENT } from "@/lib/constants";
 
 // Protect this with a secret so only your external scheduler (see README —
 // Vercel Hobby only allows daily cron, so we use cron-job.org for real
@@ -61,14 +59,6 @@ export async function GET(request: Request) {
       if (customerEmail && o.status !== newStatus && ["completed", "partial", "canceled", "refunded"].includes(newStatus)) {
         const { subject, html } = orderStatusEmail({ orderId: o.id, serviceName, status: newStatus });
         await sendEmail(customerEmail, subject, html);
-      }
-
-      if (newStatus === "completed" && o.status !== "completed") {
-        const reward = await grantReferralRewardIfCompleted(admin, o.id);
-        if (reward) {
-          const { subject, html } = referralRewardEmail({ code: reward.code, percent: REFERRAL_DISCOUNT_PERCENT });
-          await sendEmail(reward.referrerEmail, subject, html);
-        }
       }
 
       updated++;

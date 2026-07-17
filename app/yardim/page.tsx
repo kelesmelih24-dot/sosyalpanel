@@ -17,7 +17,6 @@ const articles = [
   { q: "Fatura alabilir miyim?", a: "Evet, siparişin onaylandıktan sonra faturan hazırlanıp 'Sipariş Sorgula' sayfasında sana sunulur." },
   { q: "Kredi kartıyla ödeme yapabilir miyim?", a: "Şu an sadece Havale/EFT kabul ediyoruz, kredi kartı ile ödeme çok yakında aktif olacak." },
   { q: "Değerlendirme bırakırsam ne kazanırım?", a: "İlk değerlendirmende %5 indirim kodu kazanırsın, 30 gün geçerlidir." },
-  { q: "Arkadaşımı davet edersem ne olur?", a: "Sen ve davet ettiğin arkadaşın, arkadaşının siparişi tamamlandığında %5 indirim kazanırsınız." },
   { q: "Destek saatleriniz nedir?", a: "Destek ekibimiz hafta içi 09:00-18:00 arası aktif, ama site 7/24 otomatik çalışır." },
   { q: "Fiyatlara KDV dahil mi?", a: "Evet, tüm fiyatlarımız KDV dahildir." },
 ];

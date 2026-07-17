@@ -24,8 +24,21 @@ admin yönetim paneli içerir.
   bile bakiye ikinci kez iade edilmez
 - Kullanım Şartları, Gizlilik Politikası ve KVKK Aydınlatma Metni şablon sayfaları (footer'da bağlantılı, kayıt formunda onay kutusu ile)
 - Admin paneli: hizmet CRUD, tedarikçi yönetimi, sipariş durumu güncelleme, kullanıcı/bakiye yönetimi
+- **Üye olmadan sipariş verme (misafir checkout)**: müşteri hesap açmadan bir hizmet
+  seçip link+miktar+e-posta girerek sipariş talebi oluşturabilir (`/misafir-siparis`).
+  Sipariş "ödeme bekleniyor" durumunda oluşur; admin havale/kripto ödemesini onaylayınca
+  (durumu "beklemede"ye çekince) sipariş otomatik olarak tedarikçiye iletilir. Müşteri
+  durumu üye olmadan `/siparis-sorgula`'dan (sipariş no + e-posta ile) takip edebilir.
 - **Açık temalı, pembe/magenta marka renkli vitrin sitesi** (rasyenmedya.com tarzı): üst iletişim çubuğu, platform bazlı "Hizmetler" açılır menüsü, her platform için gerçek verilerle çalışan kategori ve hizmet listeleme sayfaları (`/hizmetler/[platform]/[kategori]`), üye olmadan sipariş sorgulama (`/siparis-sorgula`)
 - Admin/kullanıcı paneli (dashboard) ayrı, koyu temalı bir uygulama arayüzü olarak kalır — bu bilinçli bir tercih, çoğu SaaS'ta vitrin sitesi ile uygulama paneli farklı görünür
+
+## Bu güncellemeden sonra yapman gereken tek şey
+
+Misafir sipariş (üye olmadan sipariş) özelliği `orders` tablosuna yeni kolonlar
+ekliyor. Supabase SQL Editor'de **`supabase/schema.sql` dosyasının tamamını tekrar
+çalıştır** — dosya artık tamamen güvenle tekrar çalıştırılabilir (tablolar, policy'ler
+ve kısıtlar hepsi "varsa atla / varsa değiştir" mantığıyla yazıldı), var olan verini
+silmez veya kopyalamaz.
 
 ## Vitrin sitesindeki yer tutucular (canlıya almadan önce değiştir)
 
@@ -35,17 +48,9 @@ admin yönetim paneli içerir.
 - Ana sayfadaki platform ikonlarının bağlandığı kategoriler `supabase/schema.sql`'deki seed
   verisiyle geliyor — admin panelinden gerçek hizmetlerini eklemeyi unutma, yoksa kategori
   sayfaları "henüz hizmet eklenmedi" gösterir
-- **Zaten kurulu bir Supabase projen varsa**: `schema.sql`'i tekrar baştan çalıştırma,
-  var olan kategoriler kopyalanır. Bunun yerine SQL Editor'de sadece şunu çalıştır:
-  ```sql
-  insert into public.categories (name, platform, sort_order) values
-    ('Twitter Takipçi', 'twitter', 7),
-    ('Facebook Beğeni', 'facebook', 8),
-    ('Spotify Dinlenme', 'spotify', 9),
-    ('Pinterest Takipçi', 'pinterest', 10),
-    ('LinkedIn Takipçi', 'linkedin', 11),
-    ('SoundCloud Dinlenme', 'soundcloud', 12);
-  ```
+- **`schema.sql` artık tamamen güvenle tekrar çalıştırılabilir**: policy'ler ve
+  kategori ekleme çakışma vermeyecek şekilde güncellendi. Yeni platform
+  kategorilerini eklemek için dosyanın tamamını SQL Editor'de tekrar çalıştırman yeterli.
 
 ## Tedarikçi ekleme
 

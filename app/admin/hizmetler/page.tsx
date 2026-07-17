@@ -38,9 +38,10 @@ export default function AdminHizmetlerPage() {
 
   async function load() {
     const { data: cats } = await supabase.from("categories").select("*").order("sort_order");
-    const { data: svcs } = await supabase.from("services").select("*").order("id", { ascending: false });
+    const svcRes = await fetch("/api/admin/services");
+    const svcData = await svcRes.json();
     setCategories(cats ?? []);
-    setServices(svcs ?? []);
+    setServices(svcData.services ?? []);
     const provRes = await fetch("/api/admin/providers");
     const provData = await provRes.json();
     setProviders(provData.providers ?? []);

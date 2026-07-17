@@ -2,6 +2,19 @@ import { NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/server";
 import { requireAdmin } from "@/lib/supabase/require-admin";
 
+// Admin needs to see inactive services too, which the public RLS policy
+// (services_public_read: is_active = true) intentionally hides from
+// ordinary browser queries — so this always goes through the admin client.
+export async function GET() {
+  const check = await requireAdmin();
+  if (!check.ok) return NextResponse.json({ error: check.error }, { status: check.status });
+
+  const admin = createAdminClient();
+  const { data, error } = await admin.from("services").select("*").order("id", { ascending: false });
+  if (error) return NextResponse.json({ error: error.message }, { status: 400 });
+  return NextResponse.json({ services: data });
+}
+
 export async function POST(request: Request) {
   const check = await requireAdmin();
   if (!check.ok) return NextResponse.json({ error: check.error }, { status: check.status });

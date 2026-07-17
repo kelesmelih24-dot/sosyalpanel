@@ -4,6 +4,7 @@ import { useState } from "react";
 import { PublicHeader } from "@/components/PublicHeader";
 
 const statusColor: Record<string, string> = {
+  awaiting_payment: "text-orange-600",
   pending: "text-amber-600",
   processing: "text-blue-600",
   in_progress: "text-blue-600",

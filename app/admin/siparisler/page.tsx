@@ -5,7 +5,7 @@ export default async function AdminSiparislerPage() {
   const admin = createAdminClient();
   const { data: orders } = await admin
     .from("orders")
-    .select("id, link, quantity, charge, status, created_at, profiles(email), services(name)")
+    .select("id, link, quantity, charge, status, created_at, guest_email, profiles(email), services(name)")
     .order("created_at", { ascending: false })
     .limit(200);
 
@@ -30,7 +30,14 @@ export default async function AdminSiparislerPage() {
             {(orders ?? []).map((o: any) => (
               <tr key={o.id} className="border-t border-line">
                 <td className="px-5 py-3 font-mono text-mute">{o.id}</td>
-                <td className="px-5 py-3 text-mute">{o.profiles?.email ?? "—"}</td>
+                <td className="px-5 py-3 text-mute">
+                  {o.profiles?.email ?? (
+                    <span>
+                      {o.guest_email}{" "}
+                      <span className="rounded-full bg-amber/15 px-2 py-0.5 text-[10px] font-medium text-amber">misafir</span>
+                    </span>
+                  )}
+                </td>
                 <td className="px-5 py-3 text-ink">{o.services?.name ?? "—"}</td>
                 <td className="px-5 py-3 text-mute">{o.quantity.toLocaleString("tr-TR")}</td>
                 <td className="px-5 py-3 font-mono text-mute">₺{Number(o.charge).toFixed(2)}</td>

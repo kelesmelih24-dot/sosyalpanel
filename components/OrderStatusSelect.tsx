@@ -3,8 +3,9 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 
-const statuses = ["pending", "processing", "in_progress", "completed", "partial", "canceled", "refunded"];
+const statuses = ["awaiting_payment", "pending", "processing", "in_progress", "completed", "partial", "canceled", "refunded"];
 const labels: Record<string, string> = {
+  awaiting_payment: "Ödeme Bekleniyor",
   pending: "Beklemede",
   processing: "İşleniyor",
   in_progress: "Devam Ediyor",

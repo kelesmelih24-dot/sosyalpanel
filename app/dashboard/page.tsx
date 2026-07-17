@@ -2,6 +2,7 @@ import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 
 const statusLabel: Record<string, string> = {
+  awaiting_payment: "Ödeme Bekleniyor",
   pending: "Beklemede",
   processing: "İşleniyor",
   in_progress: "Devam Ediyor",
@@ -12,6 +13,7 @@ const statusLabel: Record<string, string> = {
 };
 
 const statusColor: Record<string, string> = {
+  awaiting_payment: "text-amber",
   pending: "text-amber",
   processing: "text-cyan",
   in_progress: "text-cyan",

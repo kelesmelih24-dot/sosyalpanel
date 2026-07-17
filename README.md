@@ -195,8 +195,8 @@ Bu bölüm en son eklenen büyük özellik setini anlatır.
 ### Değerlendirme sistemi + AI moderasyon
 
 - `/degerlendirme` — müşteri kendi yorumunu girer (isim, e-posta opsiyonel, puan, yorum).
-- Yorum, Claude API ile **otomatik** kontrol edilir (küfür/spam/alakasız içerik var mı) —
-  admin onayı beklemez, uygunsa direkt yayınlanır. `ANTHROPIC_API_KEY` ayarlı değilse
+- Yorum, Groq API (Llama 3.3) ile **otomatik** kontrol edilir (küfür/spam/alakasız içerik var mı) —
+  admin onayı beklemez, uygunsa direkt yayınlanır. `GROQ_API_KEY` ayarlı değilse
   güvenlik için hiçbir yorum otomatik yayınlanmaz (admin panelinden elle onaylanabilir).
 - İlk yorumunu bırakan müşteriye otomatik %5, 30 gün geçerli tek kullanımlık kupon kodu
   e-posta ile gönderilir.
@@ -216,17 +216,17 @@ Sipariş formunda: **girilen kupon kodu > referans linki > ilk sipariş hoşgeld
 
 ### AI Canlı Destek
 
-Sağ altta bir sohbet balonu — Claude API ile çalışır, sitenin politikalarını (iade yok,
+Sağ altta bir sohbet balonu — Groq API (Llama 3.3) ile çalışır, sitenin politikalarını (iade yok,
 min. tutar, KDV dahil, dekont süreci vb.) bilir. Cevaplayamadığı veya hesaba özel/hassas
 bir durum olduğunu tespit ettiğinde otomatik olarak **Telegram'a** bildirim gönderir.
-`ANTHROPIC_API_KEY` ayarlı değilse widget "Whatsapp'tan yaz" gibi bir mesaj gösterir,
+`GROQ_API_KEY` ayarlı değilse widget "Whatsapp'tan yaz" gibi bir mesaj gösterir,
 hiçbir şey bozulmaz. Sistemin bildiği politikaları `app/api/ai-chat/route.ts` içindeki
 `SYSTEM_PROMPT` metninde düzenleyebilirsin — gerçek müşteri senaryolarını buraya ekleyerek
 asistanı daha isabetli hale getirebilirsin.
 
 ### Blog
 
-- `/admin/blog` — "✨ AI ile Yaz" butonuna bir konu yazıp basman yeterli, Claude taslak
+- `/admin/blog` — "✨ AI ile Yaz" butonuna bir konu yazıp basman yeterli, AI taslak
   yazı üretir; düzenleyip yayınlarsın. Kapak görseli olarak gerçek bir görsel API'si
   bağlı değil (ücretsiz/basit tutmak için) — bunun yerine seçtiğin renklerle gradient
   bir kapak oluşturuluyor.
@@ -285,7 +285,7 @@ alınamaz bir işlemdir, sipariş kaydı istatistik amaçlı anonim olarak kalı
 1. `supabase/schema.sql`'i tekrar çalıştır (yeni tablolar: `discount_codes`,
    `referral_codes`, `referral_redemptions`, `blog_posts`, yeni kolonlar).
 2. `supabase/seed_blog.sql`'i çalıştır (6 başlangıç blog yazısı).
-3. `ANTHROPIC_API_KEY` al ([console.anthropic.com](https://console.anthropic.com)) ve
+3. `GROQ_API_KEY` al ([console.groq.com](https://console.groq.com), tamamen ücretsiz, kredi kartı istemez) ve
    ortam değişkenlerine ekle — AI moderasyon, AI destek ve AI blog yazımı için gerekli.
 4. İstersen `NEXT_PUBLIC_GA_MEASUREMENT_ID` ve `ADMIN_REPORT_EMAIL` ekle.
 5. Kendi hesabını `admin` olarak bıraktın, ileride ekleyeceğin destek elemanına

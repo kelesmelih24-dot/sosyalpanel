@@ -32,7 +32,7 @@ KURALLAR:
 
 export async function POST(request: Request) {
   const { messages } = await request.json();
-  const apiKey = process.env.ANTHROPIC_API_KEY;
+  const apiKey = process.env.GROQ_API_KEY;
 
   if (!apiKey) {
     return NextResponse.json({
@@ -42,18 +42,16 @@ export async function POST(request: Request) {
   }
 
   try {
-    const res = await fetch("https://api.anthropic.com/v1/messages", {
+    const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "x-api-key": apiKey,
-        "anthropic-version": "2023-06-01",
+        Authorization: `Bearer ${apiKey}`,
       },
       body: JSON.stringify({
-        model: "claude-sonnet-4-6",
+        model: "llama-3.3-70b-versatile",
         max_tokens: 500,
-        system: SYSTEM_PROMPT,
-        messages: (messages ?? []).map((m: any) => ({ role: m.role, content: m.content })),
+        messages: [{ role: "system", content: SYSTEM_PROMPT }, ...(messages ?? []).map((m: any) => ({ role: m.role, content: m.content }))],
       }),
     });
 
@@ -62,7 +60,7 @@ export async function POST(request: Request) {
     }
 
     const data = await res.json();
-    let reply: string = data.content?.[0]?.text ?? "Üzgünüm, şu an cevap veremiyorum.";
+    let reply: string = data.choices?.[0]?.message?.content ?? "Üzgünüm, şu an cevap veremiyorum.";
 
     const escalated = reply.includes("[ESCALATE]");
     reply = reply.replace("[ESCALATE]", "").trim();

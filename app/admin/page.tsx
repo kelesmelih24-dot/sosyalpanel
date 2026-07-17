@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { createAdminClient } from "@/lib/supabase/server";
+import { SimpleBarChart } from "@/components/SimpleBarChart";
 
 export default async function AdminOverview() {
   // Uses the service-role client (not the session-bound one) — RLS restricts
@@ -23,6 +24,36 @@ export default async function AdminOverview() {
   const lowBalanceProviders: any[] = (lowProviders ?? []).filter(
     (p: any) => Number(p.last_balance) < Number(p.low_balance_threshold)
   );
+
+  // ---- Last 14 days revenue chart (computed client-side from raw orders) ----
+  const fourteenDaysAgo = new Date(Date.now() - 14 * 24 * 60 * 60 * 1000).toISOString();
+  const { data: recentOrders } = await admin
+    .from("orders")
+    .select("charge, created_at, service_id, services(name)")
+    .gte("created_at", fourteenDaysAgo)
+    .not("status", "eq", "awaiting_payment")
+    .limit(2000);
+
+  const dayBuckets: Record<string, number> = {};
+  for (let i = 13; i >= 0; i--) {
+    const d = new Date(Date.now() - i * 24 * 60 * 60 * 1000);
+    dayBuckets[d.toISOString().slice(0, 10)] = 0;
+  }
+  const serviceCounts: Record<string, { name: string; count: number }> = {};
+  for (const o of recentOrders ?? []) {
+    const day = (o as any).created_at.slice(0, 10);
+    if (day in dayBuckets) dayBuckets[day] += Number(o.charge);
+    const name = (o as any).services?.name ?? "—";
+    serviceCounts[name] = serviceCounts[name] || { name, count: 0 };
+    serviceCounts[name].count++;
+  }
+  const chartData = Object.entries(dayBuckets).map(([day, value]) => ({
+    label: new Date(day).toLocaleDateString("tr-TR", { day: "2-digit", month: "2-digit" }),
+    value,
+  }));
+  const bestSellers = Object.values(serviceCounts)
+    .sort((a, b) => b.count - a.count)
+    .slice(0, 5);
 
   const cards = [
     { label: "Toplam Sipariş", value: orderCount ?? 0, accent: "text-magenta" },
@@ -60,6 +91,27 @@ export default async function AdminOverview() {
             <p className={`mt-2 font-mono text-2xl font-semibold ${c.accent}`}>{c.value}</p>
           </Link>
         ))}
+      </div>
+
+      <div className="mt-6 grid gap-4 lg:grid-cols-3">
+        <div className="rounded-xl border border-line bg-panel p-5 lg:col-span-2">
+          <h2 className="font-display font-semibold text-ink">Son 14 Gün Ciro</h2>
+          <div className="mt-4">
+            <SimpleBarChart data={chartData} />
+          </div>
+        </div>
+        <div className="rounded-xl border border-line bg-panel p-5">
+          <h2 className="font-display font-semibold text-ink">En Çok Satanlar</h2>
+          <ul className="mt-4 flex flex-col gap-2">
+            {bestSellers.map((s, i) => (
+              <li key={s.name} className="flex items-center justify-between text-sm">
+                <span className="text-mute">{i + 1}. {s.name}</span>
+                <span className="font-mono text-cyan">{s.count}</span>
+              </li>
+            ))}
+            {!bestSellers.length && <li className="text-sm text-mute">Henüz veri yok.</li>}
+          </ul>
+        </div>
       </div>
     </div>
   );

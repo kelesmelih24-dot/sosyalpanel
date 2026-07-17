@@ -1,9 +1,9 @@
 import { NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/server";
-import { requireAdmin } from "@/lib/supabase/require-admin";
+import { requireFullAdmin } from "@/lib/supabase/require-admin";
 
 export async function POST(request: Request) {
-  const check = await requireAdmin();
+  const check = await requireFullAdmin();
   if (!check.ok) return NextResponse.json({ error: check.error }, { status: check.status });
 
   const body = await request.json();

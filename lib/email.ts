@@ -32,6 +32,13 @@ export function orderStatusEmail(params: { orderId: number; serviceName: string;
     refunded: "İade Edildi",
   };
   const label = statusLabel[params.status] ?? params.status;
+  const reviewCta =
+    params.status === "completed"
+      ? `<p>Deneyimini bizimle paylaşır mısın? Değerlendirme bırakana ilk seferinde %5 indirim kodu hediye ediyoruz:</p>
+         <p><a href="${process.env.NEXT_PUBLIC_SITE_URL || ""}/degerlendirme?order=${params.orderId}"
+         style="display:inline-block;background:#E6106B;color:#fff;padding:10px 20px;border-radius:8px;
+         text-decoration:none;font-weight:600">Değerlendirme Bırak ⭐</a></p>`
+      : "";
   return {
     subject: `Sipariş #${params.orderId} — ${label}`,
     html: `
@@ -40,6 +47,7 @@ export function orderStatusEmail(params: { orderId: number; serviceName: string;
         <p><strong>Sipariş:</strong> #${params.orderId} — ${params.serviceName}</p>
         <p><strong>Yeni durum:</strong> ${label}</p>
         <p>Detaylar için "Sipariş Sorgula" sayfasından sipariş numaranı ve e-postanı girerek bakabilirsin.</p>
+        ${reviewCta}
       </div>
     `,
   };
@@ -105,6 +113,66 @@ export function guestDekontReceivedEmail(params: { orderId: number; serviceName:
         <p>Ekibimiz dekontunu kontrol edip onayladığında siparişin otomatik olarak işleme girecek.
         Durumunu dilediğin zaman "Sipariş Sorgula" sayfasından sipariş numaranı ve e-postanı
         girerek takip edebilirsin.</p>
+      </div>
+    `,
+  };
+}
+
+export function paymentReminderEmail(params: { orderId: number; serviceName: string; amount: number; uploadUrl: string }) {
+  return {
+    subject: `Hatırlatma: Sipariş #${params.orderId} için ödeme bekleniyor`,
+    html: `
+      <div style="font-family:sans-serif;color:#1a1a1a">
+        <h2>Ödemeni unutmadın değil mi? ⏰</h2>
+        <p><strong>Sipariş:</strong> #${params.orderId} — ${params.serviceName}</p>
+        <p><strong>Tutar:</strong> ₺${params.amount.toFixed(2)}</p>
+        <p>Bu sipariş <strong>24 saat içinde dekont yüklenmezse otomatik olarak iptal edilecek</strong>.
+        Ödemeni yaptıysan aşağıdaki bağlantıdan dekontunu hemen yükleyebilirsin:</p>
+        <p><a href="${params.uploadUrl}" style="display:inline-block;background:#E6106B;color:#fff;
+        padding:10px 20px;border-radius:8px;text-decoration:none;font-weight:600">Dekontu Yükle</a></p>
+      </div>
+    `,
+  };
+}
+
+export function orderExpiredEmail(params: { orderId: number; serviceName: string }) {
+  return {
+    subject: `Sipariş #${params.orderId} iptal edildi`,
+    html: `
+      <div style="font-family:sans-serif;color:#1a1a1a">
+        <h2>Siparişin iptal edildi</h2>
+        <p><strong>Sipariş:</strong> #${params.orderId} — ${params.serviceName}</p>
+        <p>24 saat içinde dekont yüklenmediği için bu sipariş otomatik olarak iptal edildi.
+        Tekrar sipariş vermek istersen sitemizden yeniden oluşturabilirsin.</p>
+      </div>
+    `,
+  };
+}
+
+export function referralRewardEmail(params: { code: string; percent: number }) {
+  return {
+    subject: `Referans ödülün hazır — %${params.percent} indirim kodu 🎁`,
+    html: `
+      <div style="font-family:sans-serif;color:#1a1a1a">
+        <h2>Arkadaşın siparişini tamamladı!</h2>
+        <p>Davet ettiğin arkadaşının siparişi başarıyla tamamlandığı için sana bir sonraki siparişinde
+        geçerli <strong>%${params.percent} indirim kodu</strong> tanımladık:</p>
+        <p style="font-size:20px;font-weight:700;letter-spacing:2px">${params.code}</p>
+        <p>Sipariş verirken kupon kodu alanına yapıştırman yeterli.</p>
+      </div>
+    `,
+  };
+}
+
+export function reviewDiscountEmail(params: { code: string; percent: number }) {
+  return {
+    subject: `Değerlendirmen için teşekkürler — %${params.percent} indirim kodun 🎁`,
+    html: `
+      <div style="font-family:sans-serif;color:#1a1a1a">
+        <h2>Yorumun için teşekkürler!</h2>
+        <p>Bir sonraki siparişinde geçerli <strong>%${params.percent} indirim kodun</strong> hazır:</p>
+        <p style="font-size:20px;font-weight:700;letter-spacing:2px">${params.code}</p>
+        <p>30 gün içinde kullanabilirsin. Sipariş verirken kupon kodu alanına yapıştırman yeterli.</p>
       </div>
     `,
   };

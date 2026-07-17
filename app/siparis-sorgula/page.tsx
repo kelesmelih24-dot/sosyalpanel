@@ -96,6 +96,13 @@ export default function SiparisSorgulaPage() {
               {result.startCount != null && <p>Başlangıç sayısı: <span className="text-slate">{result.startCount}</span></p>}
               {result.remains != null && <p>Kalan: <span className="text-slate">{result.remains}</span></p>}
               <p>Tarih: <span className="text-slate">{new Date(result.createdAt).toLocaleDateString("tr-TR")}</span></p>
+              {result.invoiceUrl && (
+                <p className="pt-2">
+                  <a href={result.invoiceUrl} target="_blank" rel="noopener noreferrer" className="font-medium text-brand hover:underline">
+                    📄 Faturayı İndir
+                  </a>
+                </p>
+              )}
             </div>
           </div>
         )}

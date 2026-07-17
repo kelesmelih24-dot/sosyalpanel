@@ -6,18 +6,20 @@ import { usePathname, useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 
 const adminLinks = [
-  { href: "/admin", label: "Genel Bakış", icon: "◧" },
-  { href: "/admin/hizmetler", label: "Hizmetler", icon: "◈" },
-  { href: "/admin/tedarikciler", label: "Tedarikçiler", icon: "⇄" },
-  { href: "/admin/siparisler", label: "Siparişler", icon: "☰" },
-  { href: "/admin/degerlendirmeler", label: "Değerlendirmeler", icon: "★" },
-  { href: "/admin/kullanicilar", label: "Yöneticiler", icon: "◎" },
+  { href: "/admin", label: "Genel Bakış", icon: "◧", fullAdminOnly: false },
+  { href: "/admin/hizmetler", label: "Hizmetler", icon: "◈", fullAdminOnly: true },
+  { href: "/admin/tedarikciler", label: "Tedarikçiler", icon: "⇄", fullAdminOnly: true },
+  { href: "/admin/siparisler", label: "Siparişler", icon: "☰", fullAdminOnly: false },
+  { href: "/admin/degerlendirmeler", label: "Değerlendirmeler", icon: "★", fullAdminOnly: false },
+  { href: "/admin/blog", label: "Blog", icon: "📝", fullAdminOnly: true },
+  { href: "/admin/kullanicilar", label: "Yöneticiler", icon: "◎", fullAdminOnly: true },
 ];
 
-export function Sidebar() {
+export function Sidebar({ role = "admin" }: { role?: "admin" | "destek" }) {
   const pathname = usePathname();
   const router = useRouter();
   const supabase = createClient();
+  const links = adminLinks.filter((l) => !l.fullAdminOnly || role === "admin");
 
   async function handleLogout() {
     await supabase.auth.signOut();
@@ -33,7 +35,7 @@ export function Sidebar() {
           SosyalPanel
         </Link>
         <nav className="flex flex-col gap-1">
-          {adminLinks.map((link) => {
+          {links.map((link) => {
             const active = pathname === link.href;
             return (
               <Link

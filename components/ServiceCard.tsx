@@ -10,6 +10,7 @@ type Service = {
   min_quantity: number;
   max_quantity: number;
   price_per_1000: number;
+  featured?: boolean;
 };
 
 export function ServiceCard({ service }: { service: Service }) {
@@ -38,6 +39,11 @@ export function ServiceCard({ service }: { service: Service }) {
 
   return (
     <div className="flex flex-col rounded-2xl border border-border2 bg-paper p-6 shadow-sm">
+      {service.featured && (
+        <span className="mb-2 inline-block w-fit rounded-full bg-amber-100 px-2.5 py-0.5 text-xs font-semibold text-amber-700">
+          ⭐ Çok Satan
+        </span>
+      )}
       <div className="font-display font-semibold text-slate">{service.name}</div>
       {service.description && <p className="mt-1 text-sm text-slateMute">{service.description}</p>}
       <div className="mt-3 text-xs text-slateMute">

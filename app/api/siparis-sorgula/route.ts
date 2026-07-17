@@ -21,7 +21,7 @@ export async function POST(request: Request) {
   const admin = createAdminClient();
   const { data: order } = await admin
     .from("orders")
-    .select("id, quantity, status, start_count, remains, created_at, guest_email, services(name), profiles(email)")
+    .select("id, quantity, status, start_count, remains, created_at, guest_email, invoice_url, services(name), profiles(email)")
     .eq("id", orderId)
     .single();
 
@@ -31,6 +31,12 @@ export async function POST(request: Request) {
   const ownerEmail = (order as any)?.profiles?.email ?? order?.guest_email;
   if (!order || !ownerEmail || ownerEmail.toLowerCase() !== String(email).toLowerCase()) {
     return NextResponse.json({ error: "Sipariş bulunamadı. Sipariş numarasını ve e-postanı kontrol et." }, { status: 404 });
+  }
+
+  let invoiceUrl: string | null = null;
+  if (order.invoice_url) {
+    const { data } = await admin.storage.from("faturalar").createSignedUrl(order.invoice_url, 3600);
+    invoiceUrl = data?.signedUrl ?? null;
   }
 
   return NextResponse.json({
@@ -43,6 +49,7 @@ export async function POST(request: Request) {
       startCount: order.start_count,
       remains: order.remains,
       createdAt: order.created_at,
+      invoiceUrl,
     },
   });
 }

@@ -1,12 +1,12 @@
 import { NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/server";
-import { requireAdmin } from "@/lib/supabase/require-admin";
+import { requireFullAdmin } from "@/lib/supabase/require-admin";
 
 // Admin needs to see inactive services too, which the public RLS policy
 // (services_public_read: is_active = true) intentionally hides from
 // ordinary browser queries — so this always goes through the admin client.
 export async function GET() {
-  const check = await requireAdmin();
+  const check = await requireFullAdmin();
   if (!check.ok) return NextResponse.json({ error: check.error }, { status: check.status });
 
   const admin = createAdminClient();
@@ -16,7 +16,7 @@ export async function GET() {
 }
 
 export async function POST(request: Request) {
-  const check = await requireAdmin();
+  const check = await requireFullAdmin();
   if (!check.ok) return NextResponse.json({ error: check.error }, { status: check.status });
 
   const body = await request.json();
@@ -27,7 +27,7 @@ export async function POST(request: Request) {
 }
 
 export async function PATCH(request: Request) {
-  const check = await requireAdmin();
+  const check = await requireFullAdmin();
   if (!check.ok) return NextResponse.json({ error: check.error }, { status: check.status });
 
   const { id, ...updates } = await request.json();
@@ -40,7 +40,7 @@ export async function PATCH(request: Request) {
 }
 
 export async function DELETE(request: Request) {
-  const check = await requireAdmin();
+  const check = await requireFullAdmin();
   if (!check.ok) return NextResponse.json({ error: check.error }, { status: check.status });
 
   const { searchParams } = new URL(request.url);

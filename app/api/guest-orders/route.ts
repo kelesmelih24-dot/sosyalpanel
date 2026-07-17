@@ -3,12 +3,14 @@ import { randomBytes } from "crypto";
 import { createAdminClient } from "@/lib/supabase/server";
 import { sendEmail, guestOrderPaymentInfoEmail } from "@/lib/email";
 import { extractHandle } from "@/lib/extractHandle";
-import { BANK_INFO } from "@/lib/constants";
+import { BANK_INFO, MIN_ORDER_AMOUNT, BULK_DISCOUNT_THRESHOLD, BULK_DISCOUNT_PERCENT, WELCOME_DISCOUNT_PERCENT, REFERRAL_DISCOUNT_PERCENT } from "@/lib/constants";
+import { validateDiscountCode, markDiscountCodeUsed, isFirstOrder } from "@/lib/discounts";
+import { redeemReferralCode } from "@/lib/referrals";
 
 // Step 1: create the order (no receipt yet) and email the customer the bank
 // details + a private link where they can upload their receipt once they've paid.
 export async function POST(request: Request) {
-  const { service_id, link, quantity, guest_email, payment_method } = await request.json();
+  const { service_id, link, quantity, guest_email, payment_method, coupon_code, ref_code } = await request.json();
 
   if (!service_id || !link || !quantity || !guest_email) {
     return NextResponse.json({ error: "Eksik alan var." }, { status: 400 });
@@ -46,7 +48,49 @@ export async function POST(request: Request) {
     );
   }
 
-  const charge = Math.round((quantity / 1000) * Number(service.price_per_1000) * 100) / 100;
+  const baseCharge = Math.round((quantity / 1000) * Number(service.price_per_1000) * 100) / 100;
+
+  if (baseCharge < MIN_ORDER_AMOUNT) {
+    return NextResponse.json(
+      { error: `Minimum sipariş tutarı ₺${MIN_ORDER_AMOUNT}. Miktarı artırman gerekiyor.` },
+      { status: 400 }
+    );
+  }
+
+  // Automatic bulk-quantity discount (independent of coupon codes).
+  const bulkDiscountAmount =
+    quantity >= BULK_DISCOUNT_THRESHOLD ? Math.round(baseCharge * (BULK_DISCOUNT_PERCENT / 100) * 100) / 100 : 0;
+
+  // Priority: explicit coupon code > referral link > automatic first-order welcome discount.
+  let couponDiscountAmount = 0;
+  let appliedCode: string | null = null;
+  let codeIdToMark: number | null = null;
+  let pendingReferralRedeem: string | null = null;
+
+  if (coupon_code) {
+    const result = await validateDiscountCode(admin, coupon_code);
+    if (!result.valid) {
+      return NextResponse.json({ error: result.error }, { status: 400 });
+    }
+    couponDiscountAmount = Math.round(baseCharge * (result.percent / 100) * 100) / 100;
+    appliedCode = coupon_code.trim().toUpperCase();
+    codeIdToMark = result.id;
+  } else if (ref_code) {
+    const firstOrder = await isFirstOrder(admin, guest_email);
+    if (firstOrder) {
+      couponDiscountAmount = Math.round(baseCharge * (REFERRAL_DISCOUNT_PERCENT / 100) * 100) / 100;
+      appliedCode = ref_code.trim().toUpperCase();
+      pendingReferralRedeem = ref_code;
+    }
+  } else {
+    const firstOrder = await isFirstOrder(admin, guest_email);
+    if (firstOrder) {
+      couponDiscountAmount = Math.round(baseCharge * (WELCOME_DISCOUNT_PERCENT / 100) * 100) / 100;
+      appliedCode = "HOŞGELDİN";
+    }
+  }
+
+  const charge = Math.max(0, Math.round((baseCharge - bulkDiscountAmount - couponDiscountAmount) * 100) / 100);
   const uploadToken = randomBytes(20).toString("hex");
 
   const { data: order, error } = await admin
@@ -60,11 +104,17 @@ export async function POST(request: Request) {
       payment_method: payment_method ?? "havale",
       status: "awaiting_payment",
       upload_token: uploadToken,
+      discount_code: appliedCode,
+      discount_amount: couponDiscountAmount,
+      bulk_discount_amount: bulkDiscountAmount,
     })
     .select()
     .single();
 
   if (error) return NextResponse.json({ error: error.message }, { status: 400 });
+
+  if (codeIdToMark) await markDiscountCodeUsed(admin, codeIdToMark);
+  if (pendingReferralRedeem) await redeemReferralCode(admin, pendingReferralRedeem, guest_email, order.id);
 
   const uploadUrl = `${process.env.NEXT_PUBLIC_SITE_URL || ""}/misafir-siparis/dekont?order=${order.id}&token=${uploadToken}`;
 

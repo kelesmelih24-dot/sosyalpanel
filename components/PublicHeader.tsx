@@ -2,9 +2,13 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { useState } from "react";
+import { Suspense, useState } from "react";
 import { CampaignBanner } from "@/components/CampaignBanner";
 import { FloatingWhatsapp } from "@/components/FloatingWhatsapp";
+import { CookieBanner } from "@/components/CookieBanner";
+import { ReferralCapture } from "@/components/ReferralCapture";
+import { AiChatWidget } from "@/components/AiChatWidget";
+import { DarkModeToggle } from "@/components/DarkModeToggle";
 
 const platforms = [
   { key: "instagram", name: "Instagram" },
@@ -27,9 +31,9 @@ export function PublicHeader() {
   return (
     <>
       <CampaignBanner />
-      <header className="sticky top-0 z-40 bg-paper">
+      <header className="sticky top-0 z-40 bg-paper dark:bg-void">
       {/* Utility bar */}
-      <div className="hidden border-b border-border2 bg-blush md:block">
+      <div className="hidden border-b border-border2 bg-blush dark:border-line dark:bg-panel md:block">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-5 py-2 text-sm text-slateMute">
           <div className="flex items-center gap-5">
             <a href="mailto:destek@sosyalpanel.com" className="flex items-center gap-1.5 hover:text-brand transition-colors">
@@ -51,9 +55,9 @@ export function PublicHeader() {
       </div>
 
       {/* Main nav */}
-      <div className="border-b border-border2">
+      <div className="border-b border-border2 dark:border-line">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-5 py-3.5">
-          <Link href="/" className="flex items-center gap-2 font-display text-lg font-bold text-slate">
+          <Link href="/" className="flex items-center gap-2 font-display text-lg font-bold text-slate dark:text-ink">
             <Image src="/logo-icon.png" alt="" width={28} height={28} className="h-7 w-7" priority />
             SosyalPanel
           </Link>
@@ -95,26 +99,48 @@ export function PublicHeader() {
               {kurumsalOpen && (
                 <div className="absolute left-0 top-full flex w-56 flex-col gap-1 rounded-xl border border-border2 bg-paper p-3 shadow-lg">
                   <Link href="/hakkimizda" className="rounded-lg px-3 py-2 text-sm text-slate hover:bg-brandSoft hover:text-brand transition-colors">Hakkımızda</Link>
+                  <Link href="/yardim" className="rounded-lg px-3 py-2 text-sm text-slate hover:bg-brandSoft hover:text-brand transition-colors">Yardım Merkezi</Link>
+                  <Link href="/referans" className="rounded-lg px-3 py-2 text-sm text-slate hover:bg-brandSoft hover:text-brand transition-colors">Arkadaşını Getir</Link>
                   <Link href="/kullanim-sartlari" className="rounded-lg px-3 py-2 text-sm text-slate hover:bg-brandSoft hover:text-brand transition-colors">Kullanım Şartları</Link>
                   <Link href="/gizlilik-politikasi" className="rounded-lg px-3 py-2 text-sm text-slate hover:bg-brandSoft hover:text-brand transition-colors">Gizlilik Politikası</Link>
                   <Link href="/kvkk-aydinlatma" className="rounded-lg px-3 py-2 text-sm text-slate hover:bg-brandSoft hover:text-brand transition-colors">KVKK Aydınlatma Metni</Link>
+                  <Link href="/mesafeli-satis-sozlesmesi" className="rounded-lg px-3 py-2 text-sm text-slate hover:bg-brandSoft hover:text-brand transition-colors">Mesafeli Satış Sözleşmesi</Link>
+                  <Link href="/on-bilgilendirme-formu" className="rounded-lg px-3 py-2 text-sm text-slate hover:bg-brandSoft hover:text-brand transition-colors">Ön Bilgilendirme Formu</Link>
                 </div>
               )}
             </div>
 
+            <Link href="/blog" className="hover:text-brand transition-colors">Blog</Link>
             <Link href="/iletisim" className="hover:text-brand transition-colors">İletişim</Link>
+
+            <form action="/arama" className="flex items-center">
+              <input
+                type="text"
+                name="q"
+                placeholder="🔍 Hizmet ara…"
+                className="w-40 rounded-lg border border-border2 bg-blush px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand"
+              />
+            </form>
           </nav>
 
-          <Link
-            href="/#hizmetler"
-            className="rounded-lg bg-brand px-4 py-2 text-sm font-semibold text-white shadow-sm transition-transform hover:scale-[1.03] hover:bg-brandDark"
-          >
-            Hemen Sipariş Ver
-          </Link>
+          <div className="flex items-center gap-2">
+            <DarkModeToggle />
+            <Link
+              href="/#hizmetler"
+              className="rounded-lg bg-brand px-4 py-2 text-sm font-semibold text-white shadow-sm transition-transform hover:scale-[1.03] hover:bg-brandDark"
+            >
+              Hemen Sipariş Ver
+            </Link>
+          </div>
         </div>
       </div>
     </header>
     <FloatingWhatsapp />
+    <AiChatWidget />
+    <CookieBanner />
+    <Suspense fallback={null}>
+      <ReferralCapture />
+    </Suspense>
     </>
   );
 }

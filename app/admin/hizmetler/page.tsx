@@ -13,6 +13,7 @@ type Service = {
   price_per_1000: number;
   category_id: number | null;
   is_active: boolean;
+  featured: boolean;
 };
 
 const empty = {
@@ -88,6 +89,15 @@ export default function AdminHizmetlerPage() {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ id: s.id, is_active: !s.is_active }),
+    });
+    load();
+  }
+
+  async function toggleFeatured(s: Service) {
+    await fetch("/api/admin/services", {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id: s.id, featured: !s.featured }),
     });
     load();
   }
@@ -248,6 +258,14 @@ export default function AdminHizmetlerPage() {
                     }`}
                   >
                     {s.is_active ? "Aktif" : "Pasif"}
+                  </button>
+                  <button
+                    onClick={() => toggleFeatured(s)}
+                    className={`ml-1.5 rounded-full px-2.5 py-1 text-xs font-medium ${
+                      s.featured ? "bg-amber/20 text-amber" : "bg-mute/15 text-mute"
+                    }`}
+                  >
+                    {s.featured ? "⭐ Çok Satan" : "+ Çok Satan"}
                   </button>
                 </td>
                 <td className="px-5 py-3 text-right">

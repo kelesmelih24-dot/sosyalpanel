@@ -46,7 +46,8 @@ export default function KvkkAydinlatmaPage() {
           <section>
             <h2 className="font-display font-semibold text-slate">Başvuru Yöntemi</h2>
             <p className="mt-2">Yukarıdaki haklarınızı kullanmak için [başvuru e-postası / adresi] üzerinden
-              bize ulaşabilirsiniz.</p>
+              bize ulaşabilirsiniz. Sipariş verilerinizin kalıcı olarak silinmesini doğrudan{" "}
+              <Link href="/veri-silme-talebi" className="text-brand hover:underline">Veri Silme Talebi</Link> sayfamızdan da isteyebilirsiniz.</p>
           </section>
         </div>
 

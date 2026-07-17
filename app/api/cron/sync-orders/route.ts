@@ -1,12 +1,14 @@
 import { NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/server";
 import { providerOrderStatus, providerBalance, normalizeProviderStatus } from "@/lib/smmProvider";
-import { sendEmail, orderStatusEmail } from "@/lib/email";
+import { sendEmail, orderStatusEmail, referralRewardEmail } from "@/lib/email";
 import { sendAlert } from "@/lib/alert";
+import { grantReferralRewardIfCompleted } from "@/lib/referrals";
+import { REFERRAL_DISCOUNT_PERCENT } from "@/lib/constants";
 
-// Protect this with a secret so only Vercel Cron (or you) can trigger it —
-// set CRON_SECRET in your environment and call this with
-// `Authorization: Bearer <CRON_SECRET>`.
+// Protect this with a secret so only your external scheduler (see README —
+// Vercel Hobby only allows daily cron, so we use cron-job.org for real
+// frequency) can trigger it: `Authorization: Bearer <CRON_SECRET>`.
 export async function GET(request: Request) {
   const authHeader = request.headers.get("authorization");
   if (process.env.CRON_SECRET && authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
@@ -19,7 +21,7 @@ export async function GET(request: Request) {
   const { data: orders } = await admin
     .from("orders")
     .select(
-      "id, status, charge, user_id, provider_order_id, services(name, provider_id, providers(id, api_url, api_key)), profiles(email)"
+      "id, status, charge, user_id, guest_email, provider_order_id, services(name, provider_id, providers(id, api_url, api_key)), profiles(email)"
     )
     .in("status", ["processing", "in_progress"])
     .not("provider_order_id", "is", null)
@@ -44,7 +46,9 @@ export async function GET(request: Request) {
         })
         .eq("id", o.id);
 
-      if ((newStatus === "refunded" || newStatus === "canceled") && !wasAlreadyClosed) {
+      // Balance refund only applies to MEMBER orders (guest orders have no
+      // account balance — their refund is a real-money process outside the app).
+      if (o.user_id && (newStatus === "refunded" || newStatus === "canceled") && !wasAlreadyClosed) {
         await admin.rpc("admin_adjust_balance", {
           p_user_id: o.user_id,
           p_amount: o.charge,
@@ -52,11 +56,19 @@ export async function GET(request: Request) {
         });
       }
 
-      const customerEmail = (o as any).profiles?.email;
+      const customerEmail = (o as any).profiles?.email ?? o.guest_email;
       const serviceName = (o as any).services?.name ?? "Hizmet";
       if (customerEmail && o.status !== newStatus && ["completed", "partial", "canceled", "refunded"].includes(newStatus)) {
         const { subject, html } = orderStatusEmail({ orderId: o.id, serviceName, status: newStatus });
         await sendEmail(customerEmail, subject, html);
+      }
+
+      if (newStatus === "completed" && o.status !== "completed") {
+        const reward = await grantReferralRewardIfCompleted(admin, o.id);
+        if (reward) {
+          const { subject, html } = referralRewardEmail({ code: reward.code, percent: REFERRAL_DISCOUNT_PERCENT });
+          await sendEmail(reward.referrerEmail, subject, html);
+        }
       }
 
       updated++;

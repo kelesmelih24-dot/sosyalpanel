@@ -159,9 +159,27 @@ npm run dev
 ### Sipariş durumu senkronizasyonu (cron)
 
 `app/api/cron/sync-orders` rotası, tedarikçiye iletilmiş siparişlerin durumunu
-çeker ve tedarikçi bakiyesini kontrol eder. Vercel Cron (`vercel.json` hazır) veya
-[cron-job.org](https://cron-job.org) gibi ücretsiz bir servisle her 10 dakikada
-bir bu adrese `Authorization: Bearer CRON_SECRET` header'ıyla istek attır.
+çeker ve tedarikçi bakiyesini kontrol eder. `app/api/cron/expire-orders` rotası
+ise 12 saat sonra ödeme hatırlatması gönderir, 24 saat sonra otomatik iptal
+eder ve yüksek sipariş hacminde uyarı verir.
+
+**Önemli — Vercel Hobby (ücretsiz) plan sınırlaması:** Vercel'in ücretsiz planı
+cron job'ların **günde sadece 1 kez** çalışmasına izin veriyor; daha sık
+(`*/10 * * * *` gibi) bir ayar **deploy'u tamamen başarısız eder**. Bu yüzden
+`vercel.json`'daki cron'ları günde bir kez çalışacak şekilde bıraktım (sadece
+deploy'un bozulmaması için). Ama bu iki işlem için günde 1 kez yetersiz —
+siparişlerin durumu ve 24 saatlik iptal/hatırlatma çok daha sık kontrol edilmeli.
+
+**Çözüm:** [cron-job.org](https://cron-job.org) gibi ücretsiz bir dış servise
+kaydolup, her iki adrese de **ayrı ayrı** sık aralıklarla (örn. 10-15 dakikada
+bir) istek attır:
+
+- `https://sitenadi.vercel.app/api/cron/sync-orders`
+- `https://sitenadi.vercel.app/api/cron/expire-orders`
+
+İkisinde de `Authorization: Bearer CRON_SECRET` header'ını eklemeyi unutma
+(`CRON_SECRET` ortam değişkenine ne yazdıysan onu). Bu şekilde Vercel'in günlük
+sınırını hiç önemsemeden istediğin sıklıkta çalıştırabilirsin.
 
 ## Eklemen gereken parçalar (production için)
 
@@ -170,7 +188,111 @@ bir bu adrese `Authorization: Bearer CRON_SECRET` header'ıyla istek attır.
 - İki adımlı doğrulama (2FA), sipariş geçmişinde arama/filtreleme, canlı destek
   widget'ı gibi geliştirmeler henüz yok.
 
+## Faz 2-6: Değerlendirme, Referans, AI Destek, Blog, Admin, Tasarım
+
+Bu bölüm en son eklenen büyük özellik setini anlatır.
+
+### Değerlendirme sistemi + AI moderasyon
+
+- `/degerlendirme` — müşteri kendi yorumunu girer (isim, e-posta opsiyonel, puan, yorum).
+- Yorum, Claude API ile **otomatik** kontrol edilir (küfür/spam/alakasız içerik var mı) —
+  admin onayı beklemez, uygunsa direkt yayınlanır. `ANTHROPIC_API_KEY` ayarlı değilse
+  güvenlik için hiçbir yorum otomatik yayınlanmaz (admin panelinden elle onaylanabilir).
+- İlk yorumunu bırakan müşteriye otomatik %5, 30 gün geçerli tek kullanımlık kupon kodu
+  e-posta ile gönderilir.
+- Sipariş tamamlandı e-postasında "Değerlendirme Bırak" butonu otomatik yer alır.
+
+### Referans programı
+
+- `/referans` — müşteri e-postasını girip kendine özel davet linkini alır.
+- Link paylaşıldığında (`?ref=KOD`), yeni müşteri ilk siparişinde otomatik %5 indirim kazanır.
+- Davet eden kişi, davet ettiği kişinin siparişi **tamamlandığında** %5 indirim kodu kazanır (e-posta ile gönderilir).
+- Bir kod en fazla 10 kez kullanılabilir (kötüye kullanım sınırı).
+
+### Kupon/indirim önceliği
+
+Sipariş formunda: **girilen kupon kodu > referans linki > ilk sipariş hoşgeldin indirimi**
+— aynı anda sadece biri uygulanır, asla üst üste binmez.
+
+### AI Canlı Destek
+
+Sağ altta bir sohbet balonu — Claude API ile çalışır, sitenin politikalarını (iade yok,
+min. tutar, KDV dahil, dekont süreci vb.) bilir. Cevaplayamadığı veya hesaba özel/hassas
+bir durum olduğunu tespit ettiğinde otomatik olarak **Telegram'a** bildirim gönderir.
+`ANTHROPIC_API_KEY` ayarlı değilse widget "Whatsapp'tan yaz" gibi bir mesaj gösterir,
+hiçbir şey bozulmaz. Sistemin bildiği politikaları `app/api/ai-chat/route.ts` içindeki
+`SYSTEM_PROMPT` metninde düzenleyebilirsin — gerçek müşteri senaryolarını buraya ekleyerek
+asistanı daha isabetli hale getirebilirsin.
+
+### Blog
+
+- `/admin/blog` — "✨ AI ile Yaz" butonuna bir konu yazıp basman yeterli, Claude taslak
+  yazı üretir; düzenleyip yayınlarsın. Kapak görseli olarak gerçek bir görsel API'si
+  bağlı değil (ücretsiz/basit tutmak için) — bunun yerine seçtiğin renklerle gradient
+  bir kapak oluşturuluyor.
+- `supabase/seed_blog.sql` — elle yazılmış 6 başlangıç yazısıyla geliyor, tekrar
+  çalıştırmak güvenli (kopya oluşturmaz).
+
+### Yardım Merkezi
+
+`/yardim` — anahtar kelimeyle anında filtrelenen, SSS'den daha kapsamlı bir bilgi tabanı.
+
+### Admin geliştirmeleri
+
+- **Çoklu admin + yetki seviyesi**: `profiles.role` artık `admin` veya `destek` olabilir.
+  `destek` rolü sadece Siparişler ve Değerlendirmeler sayfalarını görür; Hizmetler,
+  Tedarikçiler, Blog, Yöneticiler sayfalarına erişemez (hem menüden gizli hem API'de
+  engellenmiş). Birine destek yetkisi vermek için Supabase Table Editor'de
+  `profiles.role` alanını `destek` yap.
+- Siparişler sayfasında arama/filtre + CSV export butonu.
+- Genel Bakış'ta son 14 gün ciro grafiği + en çok satan 5 hizmet listesi.
+- Hizmetler sayfasında manuel "⭐ Çok Satan" rozeti — vitrin sitesinde hizmet
+  kartlarında görünür.
+- Sipariş başına PDF fatura yükleme (`Fatura Yükle` butonu) — müşteri "Sipariş
+  Sorgula"dan indirebiliyor, yüklendiğinde otomatik e-posta gidiyor.
+- Haftalık satış raporu — her Pazartesi Telegram'a (+ `ADMIN_REPORT_EMAIL` ayarlıysa
+  e-postaya da) gönderilir.
+- Yüksek sipariş hacmi uyarısı — haftada 1000+ sipariş olursa Telegram'a bildirim gider.
+
+### 24 saat otomatik iptal + hatırlatma
+
+`app/api/cron/expire-orders` — 12. saatte e-posta hatırlatması, 24. saatte otomatik iptal.
+**Not:** Müşteriye WhatsApp hatırlatması henüz gönderilmiyor — bunun için Meta WhatsApp
+Cloud API (ücretsiz) veya Twilio (ücretli) gibi bir sağlayıcıya ihtiyaç var; hangisini
+seçersen kodun ilgili yerine (`app/api/cron/expire-orders/route.ts` içindeki TODO) entegre
+edebilirim, sağlayıcı hesabı açtığında haber ver.
+
+### Kara mod
+
+Sağ üstteki 🌙/☀️ butonuyla açılıp kapanıyor, tarayıcı/sistem tercihine göre varsayılan
+olarak da başlıyor. **Not:** Zaman kısıtı nedeniyle şu an sadece üst menüde tam kara mod
+desteği var; diğer sayfalar (hizmet kategorileri, yasal sayfalar vb.) şimdilik hep açık
+temada kalıyor. İstersen bunu diğer sayfalara da genişletebilirim.
+
+### Google Analytics
+
+`NEXT_PUBLIC_GA_MEASUREMENT_ID` ortam değişkenine **bu site için yeni oluşturduğun**
+bir GA4 mülkünün ölçüm ID'sini (G- ile başlar) gir. Boş bıraksan hiçbir şey yüklenmez.
+
+### KVKK Veri Silme Talebi
+
+`/veri-silme-talebi` — müşteri sipariş no + e-postasıyla kendi kişisel verilerinin
+(e-posta, link, dekont, fatura) kalıcı olarak silinmesini talep edebilir. Bu geri
+alınamaz bir işlemdir, sipariş kaydı istatistik amaçlı anonim olarak kalır.
+
+## Bu güncellemeden sonra yapman gerekenler
+
+1. `supabase/schema.sql`'i tekrar çalıştır (yeni tablolar: `discount_codes`,
+   `referral_codes`, `referral_redemptions`, `blog_posts`, yeni kolonlar).
+2. `supabase/seed_blog.sql`'i çalıştır (6 başlangıç blog yazısı).
+3. `ANTHROPIC_API_KEY` al ([console.anthropic.com](https://console.anthropic.com)) ve
+   ortam değişkenlerine ekle — AI moderasyon, AI destek ve AI blog yazımı için gerekli.
+4. İstersen `NEXT_PUBLIC_GA_MEASUREMENT_ID` ve `ADMIN_REPORT_EMAIL` ekle.
+5. Kendi hesabını `admin` olarak bıraktın, ileride ekleyeceğin destek elemanına
+   `destek` rolü ver.
+
 ## Klasör yapısı
+
 
 ```
 app/

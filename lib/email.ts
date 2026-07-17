@@ -57,16 +57,54 @@ export function topupApprovedEmail(amount: number) {
   };
 }
 
-export function guestOrderReceivedEmail(params: { orderId: number; serviceName: string; amount: number }) {
+export function guestOrderPaymentInfoEmail(params: {
+  orderId: number;
+  serviceName: string;
+  amount: number;
+  uploadUrl: string;
+  bankAccountName: string;
+  iban: string;
+  bankName: string;
+  transferNote: string;
+}) {
   return {
-    subject: `Sipariş #${params.orderId} alındı — ödeme onayı bekleniyor`,
+    subject: `Sipariş #${params.orderId} — Ödeme bilgileri ve dekont yükleme linki`,
     html: `
       <div style="font-family:sans-serif;color:#1a1a1a">
-        <h2>Sipariş talebin alındı</h2>
+        <h2>Siparişin oluşturuldu</h2>
         <p><strong>Sipariş:</strong> #${params.orderId} — ${params.serviceName}</p>
         <p><strong>Tutar:</strong> ₺${params.amount.toFixed(2)}</p>
-        <p>Yüklediğin dekont ekibimiz tarafından onaylandığında siparişin otomatik olarak işleme girecek.
-        Durumunu dilediğin zaman "Sipariş Sorgula" sayfasından takip edebilirsin.</p>
+        <hr style="border:none;border-top:1px solid #eee;margin:16px 0" />
+        <p><strong>Ödeme bilgileri</strong></p>
+        <p>Alıcı: ${params.bankAccountName}<br/>
+        IBAN: ${params.iban}<br/>
+        Banka: ${params.bankName}</p>
+        <p style="background:#fef2f2;color:#b91c1c;padding:10px 14px;border-radius:8px">
+          ⚠️ <strong>Zorunlu:</strong> Transfer açıklama kısmına mutlaka
+          "<strong>${params.transferNote}</strong>" (hesap kullanıcı adın) yazın.
+          Açıklama boş bırakılırsa veya farklı yazılırsa ödemeniz eşleştirilemez.
+        </p>
+        <hr style="border:none;border-top:1px solid #eee;margin:16px 0" />
+        <p>Ödemeni yaptıktan sonra aşağıdaki bağlantıdan dekontunu (fotoğraf/PDF) yükle —
+        yükleme tamamlanınca siparişin onay için ekibimize iletilir:</p>
+        <p><a href="${params.uploadUrl}" style="display:inline-block;background:#E6106B;color:#fff;
+        padding:10px 20px;border-radius:8px;text-decoration:none;font-weight:600">Dekontu Yükle</a></p>
+        <p style="color:#666;font-size:13px">Bağlantı çalışmazsa: ${params.uploadUrl}</p>
+      </div>
+    `,
+  };
+}
+
+export function guestDekontReceivedEmail(params: { orderId: number; serviceName: string }) {
+  return {
+    subject: `Dekontun alındı — Sipariş #${params.orderId}`,
+    html: `
+      <div style="font-family:sans-serif;color:#1a1a1a">
+        <h2>Dekontun bize ulaştı</h2>
+        <p><strong>Sipariş:</strong> #${params.orderId} — ${params.serviceName}</p>
+        <p>Ekibimiz dekontunu kontrol edip onayladığında siparişin otomatik olarak işleme girecek.
+        Durumunu dilediğin zaman "Sipariş Sorgula" sayfasından sipariş numaranı ve e-postanı
+        girerek takip edebilirsin.</p>
       </div>
     `,
   };

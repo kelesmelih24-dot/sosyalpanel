@@ -7,16 +7,31 @@ alır, dekontu kontrol edip onaylarsın — sipariş otomatik işleme girer.
 
 ## Nasıl çalışır (müşteri tarafı)
 
-1. Müşteri `/hizmetler/[platform]` üzerinden bir kategori, oradan bir hizmet seçer
-2. "Sipariş Ver" ile `/misafir-siparis` sayfasına gider — hesap açmasına gerek yoktur
-3. Hedef link, miktar, e-posta ve ödeme dekontunu (fotoğraf/PDF) yükler
-4. Sipariş "ödeme bekleniyor" durumunda oluşur, **sana Telegram'dan anında bildirim gider**
-5. Admin panelinden dekontu görüntüleyip onaylarsın (durumu "Beklemede"ye çekersin)
-6. Tedarikçi bağlıysa sipariş otomatik iletilir; değilse elle işlersin
-7. Müşteri `/siparis-sorgula`'dan sipariş no + e-posta ile durumu takip eder
+1. Müşteri `/hizmetler/[platform]` üzerinden bir kategori, oradan bir hizmet seçer,
+   miktarı kartın üzerinden seçip "Sipariş Ver" der
+2. `/misafir-siparis` sayfasında hedef link + e-posta girer, **sipariş bu an oluşur**
+   (henüz dekont yok) — hesap açmasına gerek yoktur
+3. Ödeme bilgilerini ve kişiye özel "Dekontu Yükle" bağlantısını **e-postasına**
+   otomatik olarak göndeririz (ekranda da aynı bilgiler + buton gösterilir,
+   e-posta gelmezse de devam edebilir)
+4. Müşteri ödemeyi yaptıktan sonra o bağlantıdan dekontunu (fotoğraf/PDF) yükler
+5. Dekont yüklenir yüklenmez **sana Telegram'dan anında bildirim gider**
+6. Admin panelinden dekontu görüntüleyip onaylarsın (durumu "Beklemede"ye çekersin)
+7. Tedarikçi bağlıysa sipariş otomatik iletilir; değilse elle işlersin
+8. Müşteri `/siparis-sorgula`'dan sipariş no + e-posta ile durumu her an takip eder
 
 Not: Admin/yönetici girişi (`/giris`) hâlâ var — bu sadece SENİN panele girmen
 içindir, müşteriler hiçbir zaman hesap açmaz veya giriş yapmaz.
+
+## Önemli: e-posta artık kritik bir adım
+
+Ödeme bilgileri ve dekont yükleme linki müşteriye **e-posta ile** gönderiliyor.
+Bu yüzden `RESEND_API_KEY` ve `RESEND_FROM_EMAIL` ortam değişkenlerini mutlaka
+ayarla (ücretsiz [resend.com](https://resend.com) hesabıyla) — ayarlamazsan
+müşteri e-postayı alamaz. Yine de ekranda aynı bilgiler + "Dekontu Yükle" butonu
+gösterildiği için müşteri e-posta gelmese de sipariş ekranından devam edebilir,
+ama e-postayı kurman şiddetle önerilir. Ayrıca `NEXT_PUBLIC_SITE_URL` değişkeninin
+doğru (gerçek) domain'ine ayarlı olduğundan emin ol — e-postadaki link bu değeri kullanır.
 
 ## Özellikler
 

@@ -7,7 +7,6 @@ import { CampaignBanner } from "@/components/CampaignBanner";
 import { FloatingWhatsapp } from "@/components/FloatingWhatsapp";
 import { CookieBanner } from "@/components/CookieBanner";
 import { AiChatWidget } from "@/components/AiChatWidget";
-import { DarkModeToggle } from "@/components/DarkModeToggle";
 
 const platforms = [
   { key: "instagram", name: "Instagram" },
@@ -30,9 +29,9 @@ export function PublicHeader() {
   return (
     <>
       <CampaignBanner />
-      <header className="sticky top-0 z-40 bg-paper dark:bg-void">
+      <header className="sticky top-0 z-40 bg-paper">
       {/* Utility bar */}
-      <div className="hidden border-b border-border2 bg-blush dark:border-line dark:bg-panel md:block">
+      <div className="hidden border-b border-border2 bg-blush md:block">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-5 py-2 text-sm text-slateMute">
           <div className="flex items-center gap-5">
             <a href="mailto:destek@sosyalpanel.com" className="flex items-center gap-1.5 hover:text-brand transition-colors">
@@ -54,9 +53,9 @@ export function PublicHeader() {
       </div>
 
       {/* Main nav */}
-      <div className="border-b border-border2 dark:border-line">
+      <div className="border-b border-border2">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-5 py-3.5">
-          <Link href="/" className="flex items-center gap-2 font-display text-lg font-bold text-slate dark:text-ink">
+          <Link href="/" className="flex items-center gap-2 font-display text-lg font-bold text-slate">
             <Image src="/logo-icon.png" alt="" width={28} height={28} className="h-7 w-7" priority />
             SosyalPanel
           </Link>
@@ -123,7 +122,6 @@ export function PublicHeader() {
           </nav>
 
           <div className="flex items-center gap-2">
-            <DarkModeToggle />
             <Link
               href="/#hizmetler"
               className="rounded-lg bg-brand px-4 py-2 text-sm font-semibold text-white shadow-sm transition-transform hover:scale-[1.03] hover:bg-brandDark"

@@ -30,22 +30,6 @@ const GA_ID = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID;
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="tr" className={`${display.variable} ${body.variable} ${mono.variable}`}>
-      <head>
-        {/* Set the dark/light class before paint to avoid a flash of the wrong theme. */}
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `
-              (function() {
-                try {
-                  var stored = localStorage.getItem('theme');
-                  var isDark = stored ? stored === 'dark' : window.matchMedia('(prefers-color-scheme: dark)').matches;
-                  if (isDark) document.documentElement.classList.add('dark');
-                } catch (e) {}
-              })();
-            `,
-          }}
-        />
-      </head>
       <body className="font-body antialiased">
         {children}
         {GA_ID && (

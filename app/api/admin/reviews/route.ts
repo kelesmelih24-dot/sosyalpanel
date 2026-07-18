@@ -12,29 +12,9 @@ export async function GET() {
   return NextResponse.json({ reviews: data });
 }
 
-export async function POST(request: Request) {
-  const check = await requireAdmin();
-  if (!check.ok) return NextResponse.json({ error: check.error }, { status: check.status });
-
-  const body = await request.json();
-  const admin = createAdminClient();
-  const { data, error } = await admin.from("reviews").insert(body).select().single();
-  if (error) return NextResponse.json({ error: error.message }, { status: 400 });
-  return NextResponse.json({ review: data });
-}
-
-export async function PATCH(request: Request) {
-  const check = await requireAdmin();
-  if (!check.ok) return NextResponse.json({ error: check.error }, { status: check.status });
-
-  const { id, ...updates } = await request.json();
-  if (!id) return NextResponse.json({ error: "id gerekli" }, { status: 400 });
-
-  const admin = createAdminClient();
-  const { data, error } = await admin.from("reviews").update(updates).eq("id", id).select().single();
-  if (error) return NextResponse.json({ error: error.message }, { status: 400 });
-  return NextResponse.json({ review: data });
-}
+// Note: no POST or PATCH here — admins can't create or edit reviews, only
+// view them and delete inappropriate ones. Real reviews come in through
+// /api/reviews (public, AI-moderated), and is_published is set there.
 
 export async function DELETE(request: Request) {
   const check = await requireAdmin();

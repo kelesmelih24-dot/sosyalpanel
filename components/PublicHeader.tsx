@@ -109,6 +109,7 @@ export function PublicHeader() {
             </div>
 
             <Link href="/blog" className="hover:text-brand transition-colors">Blog</Link>
+            <Link href="/degerlendirme" className="hover:text-brand transition-colors">⭐ Değerlendirme Bırak</Link>
             <Link href="/iletisim" className="hover:text-brand transition-colors">İletişim</Link>
 
             <form action="/arama" className="flex items-center">

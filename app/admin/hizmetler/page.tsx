@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 
 type Category = { id: number; name: string; platform: string };
@@ -14,6 +14,8 @@ type Service = {
   category_id: number | null;
   is_active: boolean;
   featured: boolean;
+  provider_id: number | null;
+  provider_service_id: string | null;
 };
 
 const empty = {
@@ -33,9 +35,11 @@ export default function AdminHizmetlerPage() {
   const [services, setServices] = useState<Service[]>([]);
   const [providers, setProviders] = useState<{ id: number; name: string }[]>([]);
   const [form, setForm] = useState<any>(empty);
+  const [editingId, setEditingId] = useState<number | null>(null);
   const [newCategory, setNewCategory] = useState({ name: "", platform: "instagram" });
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [query, setQuery] = useState("");
 
   async function load() {
     const { data: cats } = await supabase.from("categories").select("*").order("sort_order");
@@ -52,6 +56,12 @@ export default function AdminHizmetlerPage() {
     load();
   }, []);
 
+  const filteredServices = useMemo(() => {
+    if (!query.trim()) return services;
+    const q = query.trim().toLowerCase();
+    return services.filter((s) => s.name.toLowerCase().includes(q));
+  }, [services, query]);
+
   async function handleCreateCategory(e: React.FormEvent) {
     e.preventDefault();
     await fetch("/api/admin/categories", {
@@ -63,25 +73,47 @@ export default function AdminHizmetlerPage() {
     load();
   }
 
-  async function handleCreateService(e: React.FormEvent) {
+  async function handleSaveService(e: React.FormEvent) {
     e.preventDefault();
     setError(null);
     setLoading(true);
+    const payload = {
+      ...form,
+      category_id: form.category_id || null,
+      provider_id: form.provider_id || null,
+      provider_service_id: form.provider_service_id || null,
+    };
     const res = await fetch("/api/admin/services", {
-      method: "POST",
+      method: editingId ? "PATCH" : "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        ...form,
-        category_id: form.category_id || null,
-        provider_id: form.provider_id || null,
-        provider_service_id: form.provider_service_id || null,
-      }),
+      body: JSON.stringify(editingId ? { id: editingId, ...payload } : payload),
     });
     const data = await res.json();
     setLoading(false);
-    if (!res.ok) return setError(data.error ?? "Hizmet oluşturulamadı.");
+    if (!res.ok) return setError(data.error ?? "Hizmet kaydedilemedi.");
     setForm(empty);
+    setEditingId(null);
     load();
+  }
+
+  function handleEdit(s: Service) {
+    setEditingId(s.id);
+    setForm({
+      name: s.name,
+      description: s.description ?? "",
+      category_id: s.category_id ?? "",
+      min_quantity: s.min_quantity,
+      max_quantity: s.max_quantity,
+      price_per_1000: s.price_per_1000,
+      provider_id: s.provider_id ?? "",
+      provider_service_id: s.provider_service_id ?? "",
+    });
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+
+  function cancelEdit() {
+    setEditingId(null);
+    setForm(empty);
   }
 
   async function toggleActive(s: Service) {
@@ -116,8 +148,17 @@ export default function AdminHizmetlerPage() {
       </div>
 
       <div className="grid gap-6 lg:grid-cols-3">
-        <form onSubmit={handleCreateService} className="flex flex-col gap-3 rounded-xl border border-line bg-panel p-5 lg:col-span-2">
-          <h2 className="font-display font-semibold text-ink">Yeni hizmet ekle</h2>
+        <form onSubmit={handleSaveService} className="flex flex-col gap-3 rounded-xl border border-line bg-panel p-5 lg:col-span-2">
+          <div className="flex items-center justify-between">
+            <h2 className="font-display font-semibold text-ink">
+              {editingId ? `Hizmeti Düzenle (#${editingId})` : "Yeni hizmet ekle"}
+            </h2>
+            {editingId && (
+              <button type="button" onClick={cancelEdit} className="text-xs text-mute hover:text-ink">
+                Vazgeç, yeni hizmet ekle
+              </button>
+            )}
+          </div>
           <input
             required
             placeholder="Hizmet adı"
@@ -205,7 +246,7 @@ export default function AdminHizmetlerPage() {
             disabled={loading}
             className="mt-1 self-start rounded-lg bg-gradient-to-r from-magenta to-violet px-4 py-2 text-sm font-semibold text-ink transition-transform hover:scale-[1.02] disabled:opacity-60 focus-ring"
           >
-            {loading ? "Ekleniyor…" : "Hizmeti Ekle"}
+            {loading ? "Kaydediliyor…" : editingId ? "Değişiklikleri Kaydet" : "Hizmeti Ekle"}
           </button>
         </form>
 
@@ -233,50 +274,77 @@ export default function AdminHizmetlerPage() {
         </form>
       </div>
 
-      <div className="overflow-hidden rounded-xl border border-line bg-panel">
-        <table className="w-full text-left text-sm">
-          <thead className="text-mute">
-            <tr>
-              <th className="px-5 py-3 font-medium">Hizmet</th>
-              <th className="px-5 py-3 font-medium">Limit</th>
-              <th className="px-5 py-3 font-medium">₺ / 1000</th>
-              <th className="px-5 py-3 font-medium">Durum</th>
-              <th className="px-5 py-3 font-medium"></th>
-            </tr>
-          </thead>
-          <tbody>
-            {services.map((s) => (
-              <tr key={s.id} className="border-t border-line">
-                <td className="px-5 py-3 text-ink">{s.name}</td>
-                <td className="px-5 py-3 text-mute">{s.min_quantity} – {s.max_quantity}</td>
-                <td className="px-5 py-3 font-mono text-cyan">₺{Number(s.price_per_1000).toFixed(2)}</td>
-                <td className="px-5 py-3">
-                  <button
-                    onClick={() => toggleActive(s)}
-                    className={`rounded-full px-2.5 py-1 text-xs font-medium ${
-                      s.is_active ? "bg-emerald-400/15 text-emerald-400" : "bg-mute/15 text-mute"
-                    }`}
-                  >
-                    {s.is_active ? "Aktif" : "Pasif"}
-                  </button>
-                  <button
-                    onClick={() => toggleFeatured(s)}
-                    className={`ml-1.5 rounded-full px-2.5 py-1 text-xs font-medium ${
-                      s.featured ? "bg-amber/20 text-amber" : "bg-mute/15 text-mute"
-                    }`}
-                  >
-                    {s.featured ? "⭐ Çok Satan" : "+ Çok Satan"}
-                  </button>
-                </td>
-                <td className="px-5 py-3 text-right">
-                  <button onClick={() => deleteService(s.id)} className="text-xs text-magenta hover:underline">
-                    Sil
-                  </button>
-                </td>
+      <div>
+        <input
+          type="text"
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          placeholder={`Hizmet ara… (${services.length} hizmet arasında)`}
+          className="mb-3 w-full max-w-sm rounded-lg border border-line bg-void px-3.5 py-2 text-sm text-ink focus-ring"
+        />
+        <div className="max-h-[600px] overflow-y-auto rounded-xl border border-line bg-panel">
+          <table className="w-full text-left text-sm">
+            <thead className="sticky top-0 bg-panel text-mute">
+              <tr>
+                <th className="px-5 py-3 font-medium">Hizmet</th>
+                <th className="px-5 py-3 font-medium">Limit</th>
+                <th className="px-5 py-3 font-medium">₺ / 1000</th>
+                <th className="px-5 py-3 font-medium">Tedarikçi</th>
+                <th className="px-5 py-3 font-medium">Durum</th>
+                <th className="px-5 py-3 font-medium"></th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {filteredServices.slice(0, 300).map((s) => (
+                <tr key={s.id} className="border-t border-line">
+                  <td className="px-5 py-3 text-ink">{s.name}</td>
+                  <td className="px-5 py-3 text-mute">{s.min_quantity} – {s.max_quantity}</td>
+                  <td className="px-5 py-3 font-mono text-cyan">₺{Number(s.price_per_1000).toFixed(2)}</td>
+                  <td className="px-5 py-3 text-mute">
+                    {s.provider_id ? (
+                      <span className="rounded-full bg-emerald-400/15 px-2 py-0.5 text-xs text-emerald-400">
+                        {providers.find((p) => p.id === s.provider_id)?.name ?? "Bağlı"}
+                      </span>
+                    ) : (
+                      <span className="text-xs text-mute">Manuel</span>
+                    )}
+                  </td>
+                  <td className="px-5 py-3">
+                    <button
+                      onClick={() => toggleActive(s)}
+                      className={`rounded-full px-2.5 py-1 text-xs font-medium ${
+                        s.is_active ? "bg-emerald-400/15 text-emerald-400" : "bg-mute/15 text-mute"
+                      }`}
+                    >
+                      {s.is_active ? "Aktif" : "Pasif"}
+                    </button>
+                    <button
+                      onClick={() => toggleFeatured(s)}
+                      className={`ml-1.5 rounded-full px-2.5 py-1 text-xs font-medium ${
+                        s.featured ? "bg-amber/20 text-amber" : "bg-mute/15 text-mute"
+                      }`}
+                    >
+                      {s.featured ? "⭐ Çok Satan" : "+ Çok Satan"}
+                    </button>
+                  </td>
+                  <td className="px-5 py-3 text-right">
+                    <button onClick={() => handleEdit(s)} className="mr-3 text-xs text-cyan hover:underline">
+                      Düzenle
+                    </button>
+                    <button onClick={() => deleteService(s.id)} className="text-xs text-magenta hover:underline">
+                      Sil
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+          {filteredServices.length > 300 && (
+            <p className="px-5 py-3 text-xs text-mute">
+              {filteredServices.length} sonuçtan ilk 300 tanesi gösteriliyor — daha dar aramak için yukarıya yazmaya devam et.
+            </p>
+          )}
+        </div>
       </div>
     </div>
   );

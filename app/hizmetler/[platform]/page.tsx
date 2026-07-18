@@ -24,11 +24,21 @@ export default async function PlatformPage({ params }: { params: { platform: str
   if (!platformName) notFound();
 
   const supabase = createClient();
-  const { data: categories } = await supabase
+  const { data: allCategories } = await supabase
     .from("categories")
     .select("id, name")
     .eq("platform", platform)
     .order("sort_order");
+
+  // Only show categories that actually have at least one active service —
+  // otherwise a customer can click through to a page with nothing to buy.
+  const { data: activeServiceRows } = await supabase
+    .from("services")
+    .select("category_id")
+    .eq("is_active", true)
+    .in("category_id", (allCategories ?? []).map((c) => c.id));
+  const categoryIdsWithServices = new Set((activeServiceRows ?? []).map((r) => r.category_id));
+  const categories = (allCategories ?? []).filter((c) => categoryIdsWithServices.has(c.id));
 
   return (
     <div className="min-h-screen bg-paper">

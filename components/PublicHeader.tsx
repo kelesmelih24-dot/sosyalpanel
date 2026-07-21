@@ -34,8 +34,8 @@ export function PublicHeader() {
       <div className="hidden border-b border-border2 bg-blush md:block">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-5 py-2 text-sm text-slateMute">
           <div className="flex items-center gap-5">
-            <a href="mailto:destek@sosyalpanel.com" className="flex items-center gap-1.5 hover:text-brand transition-colors">
-              ✉️ destek@sosyalpanel.com
+            <a href="mailto:destek@sosyalpanel.tr" className="flex items-center gap-1.5 hover:text-brand transition-colors">
+              ✉️ destek@sosyalpanel.tr
             </a>
             <a
               href="https://wa.me/905000000000"

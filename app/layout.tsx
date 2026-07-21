@@ -20,7 +20,7 @@ const mono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "https://sosyalpanel.com"),
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "https://sosyalpanel.tr"),
   title: "SosyalPanel — SMM Panel",
   description: "Instagram, TikTok, YouTube ve daha fazlası için toptan sosyal medya hizmetleri paneli.",
 };

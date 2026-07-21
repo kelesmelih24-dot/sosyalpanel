@@ -12,11 +12,11 @@ export default function IletisimPage() {
 
         <div className="mt-8 grid gap-4 sm:grid-cols-2">
           <a
-            href="mailto:destek@sosyalpanel.com"
+            href="mailto:destek@sosyalpanel.tr"
             className="rounded-2xl border border-border2 bg-blush p-6 text-left transition-colors hover:border-brand"
           >
             <div className="font-display font-semibold text-slate">✉️ E-posta</div>
-            <div className="mt-1 text-sm text-slateMute">destek@sosyalpanel.com</div>
+            <div className="mt-1 text-sm text-slateMute">destek@sosyalpanel.tr</div>
           </a>
           <a
             href="https://wa.me/905000000000"

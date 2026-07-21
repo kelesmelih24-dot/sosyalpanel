@@ -99,7 +99,7 @@ export default async function PlatformPage({ params }: { params: { platform: str
           </div>
           <div className="flex flex-wrap gap-3">
             <Link href="/iletisim" className="rounded-lg bg-white/15 px-4 py-2 text-sm font-semibold hover:bg-white/25 transition-colors">İletişim</Link>
-            <a href="mailto:destek@sosyalpanel.com" className="rounded-lg bg-white/15 px-4 py-2 text-sm font-semibold hover:bg-white/25 transition-colors">E-Posta</a>
+            <a href="mailto:destek@sosyalpanel.tr" className="rounded-lg bg-white/15 px-4 py-2 text-sm font-semibold hover:bg-white/25 transition-colors">E-Posta</a>
             <a href="https://wa.me/905000000000" target="_blank" rel="noopener noreferrer" className="rounded-lg bg-white/15 px-4 py-2 text-sm font-semibold hover:bg-white/25 transition-colors">Whatsapp</a>
           </div>
         </div>

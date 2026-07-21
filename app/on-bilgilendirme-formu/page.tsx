@@ -20,7 +20,7 @@ export default function OnBilgilendirmePage() {
             <p className="mt-2">
               Unvan: [Şahıs Şirketi Unvanı]<br />
               Adres: [Adres]<br />
-              E-posta: destek@sosyalpanel.com
+              E-posta: destek@sosyalpanel.tr
             </p>
           </section>
           <section>

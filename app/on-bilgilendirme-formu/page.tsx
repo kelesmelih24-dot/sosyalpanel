@@ -9,17 +9,13 @@ export default function OnBilgilendirmePage() {
       <div className="mx-auto max-w-2xl px-5 py-16 text-slateMute">
         <h1 className="font-display text-3xl font-bold text-slate">Ön Bilgilendirme Formu</h1>
 
-        <div className="mt-4 rounded-lg border border-amber-300 bg-amber-50 p-4 text-sm text-amber-800">
-          <strong>Önemli:</strong> Bu sayfa genel bir taslaktır, hukuki tavsiye değildir. Yayına almadan
-          önce bir avukata onaylatıp kendi bilgilerinle güncelle.
-        </div>
-
         <div className="mt-8 flex flex-col gap-6 text-sm leading-relaxed">
           <section>
             <h2 className="font-display font-semibold text-slate">Satıcı Bilgileri</h2>
             <p className="mt-2">
-              Unvan: [Şahıs Şirketi Unvanı]<br />
-              Adres: [Adres]<br />
+              Unvan: MK Software (Melih Keleş)<br />
+              Adres: Yenimahalle, Ankara<br />
+              Vergi No: 5431084511<br />
               E-posta: destek@sosyalpanel.tr
             </p>
           </section>
@@ -50,7 +46,6 @@ export default function OnBilgilendirmePage() {
             <p className="mt-2">
               Hizmetin ifasına Alıcı'nın onayı ile hemen başlanması ve elektronik ortamda anında ifa
               edilmesi nedeniyle, ilgili mevzuat uyarınca cayma hakkı bulunmamaktadır.
-              [Bu maddeyi bir avukatla teyit et.]
             </p>
           </section>
           <section>

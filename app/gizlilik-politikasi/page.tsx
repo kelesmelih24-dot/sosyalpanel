@@ -8,38 +8,39 @@ export default function GizlilikPolitikasiPage() {
       <div className="mx-auto max-w-2xl px-5 py-16 text-slateMute">
         <h1 className="font-display text-3xl font-bold text-slate">Gizlilik Politikası</h1>
 
-        <div className="mt-4 rounded-lg border border-amber/40 bg-amber/10 p-4 text-sm text-amber">
-          <strong>Önemli:</strong> Bu sayfa genel bir taslaktır, hukuki tavsiye değildir. Hangi verileri,
-          hangi amaçla, ne kadar süre sakladığını ve hangi üçüncü taraflarla (Supabase, tedarikçiler,
-          ödeme sağlayıcıları) paylaştığını netleştirip bir avukata onaylatmalısın.
-        </div>
-
         <div className="mt-8 flex flex-col gap-6 text-sm leading-relaxed">
           <section>
             <h2 className="font-display font-semibold text-slate">1. Toplanan Veriler</h2>
             <p className="mt-2">
-              Üyelik sırasında ad soyad ve e-posta adresi; sipariş sırasında hedef link, hizmet ve tutar
-              bilgisi; bakiye yükleme sırasında ödeme yöntemi ve dekont notu toplanır.
+              Sipariş sırasında e-posta adresi, hedef link, hizmet ve tutar bilgisi; ödeme sürecinde
+              yüklediğiniz dekont dosyası toplanır. Üyelik/hesap açma zorunluluğu yoktur, bu yüzden ad
+              soyad veya şifre gibi bilgiler talep edilmez.
             </p>
           </section>
           <section>
             <h2 className="font-display font-semibold text-slate">2. Verilerin Kullanım Amacı</h2>
             <p className="mt-2">
-              Toplanan veriler; hesap oluşturma, sipariş işleme, bakiye yönetimi, destek talepleri ve
-              yasal yükümlülüklerin yerine getirilmesi amacıyla kullanılır.
+              Toplanan veriler; sipariş işleme, ödeme doğrulama, destek talepleri ve yasal
+              yükümlülüklerin yerine getirilmesi amacıyla kullanılır.
             </p>
           </section>
           <section>
             <h2 className="font-display font-semibold text-slate">3. Verilerin Paylaşımı</h2>
             <p className="mt-2">
               Sipariş bilgileri, hizmetin teslimi için bağlı olduğu üçüncü taraf tedarikçi API'lerine
-              (yalnızca link ve miktar bilgisi) iletilir. Barındırma ve veritabanı altyapısı için Supabase
-              kullanılmaktadır. Verileriniz pazarlama amacıyla üçüncü taraflara satılmaz.
+              (yalnızca link ve miktar bilgisi) iletilir. Barındırma ve veritabanı altyapısı için Supabase,
+              e-posta gönderimi için Resend kullanılmaktadır. Verileriniz pazarlama amacıyla üçüncü
+              taraflara satılmaz.
             </p>
           </section>
           <section>
             <h2 className="font-display font-semibold text-slate">4. Veri Saklama Süresi</h2>
-            <p className="mt-2">[Yasal saklama sürelerini mali müşavirinle netleştirip buraya yaz.]</p>
+            <p className="mt-2">
+              Sipariş ve ödemeye ilişkin kayıtlar, Türk Ticaret Kanunu ve Vergi Usul Kanunu gereği
+              10 yıl süreyle saklanır. Bu süre dolmadan da{" "}
+              <Link href="/veri-silme-talebi" className="text-brand hover:underline">Veri Silme Talebi</Link>{" "}
+              sayfamızdan kişisel verilerinizin (e-posta, link, dekont) anonimleştirilmesini talep edebilirsiniz.
+            </p>
           </section>
           <section>
             <h2 className="font-display font-semibold text-slate">5. Haklarınız</h2>
@@ -51,7 +52,7 @@ export default function GizlilikPolitikasiPage() {
           </section>
           <section>
             <h2 className="font-display font-semibold text-slate">6. İletişim</h2>
-            <p className="mt-2">[Veri sorumlusu iletişim bilgilerini buraya ekle.]</p>
+            <p className="mt-2">MK Software (Melih Keleş), Yenimahalle, Ankara — destek@sosyalpanel.tr</p>
           </section>
         </div>
 

@@ -8,17 +8,11 @@ export default function KvkkAydinlatmaPage() {
       <div className="mx-auto max-w-2xl px-5 py-16 text-slateMute">
         <h1 className="font-display text-3xl font-bold text-slate">KVKK Aydınlatma Metni</h1>
 
-        <div className="mt-4 rounded-lg border border-amber/40 bg-amber/10 p-4 text-sm text-amber">
-          <strong>Önemli:</strong> Bu metin 6698 sayılı Kişisel Verilerin Korunması Kanunu kapsamında
-          genel bir taslaktır. Veri sorumlusu unvanını, VERBİS kaydını (gerekiyorsa) ve gerçek veri
-          işleme süreçlerini yansıtacak şekilde bir hukuk danışmanına güncelletmelisin.
-        </div>
-
         <div className="mt-8 flex flex-col gap-6 text-sm leading-relaxed">
           <section>
             <h2 className="font-display font-semibold text-slate">Veri Sorumlusu</h2>
-            <p className="mt-2">[Şirket unvanı], 6698 sayılı KVKK uyarınca "Veri Sorumlusu" sıfatıyla
-              kişisel verilerinizi aşağıda açıklanan kapsamda işlemektedir.</p>
+            <p className="mt-2">MK Software (Melih Keleş), Yenimahalle, Ankara — 6698 sayılı KVKK uyarınca
+              "Veri Sorumlusu" sıfatıyla kişisel verilerinizi aşağıda açıklanan kapsamda işlemektedir.</p>
           </section>
           <section>
             <h2 className="font-display font-semibold text-slate">İşlenen Kişisel Veriler</h2>
@@ -45,7 +39,7 @@ export default function KvkkAydinlatmaPage() {
           </section>
           <section>
             <h2 className="font-display font-semibold text-slate">Başvuru Yöntemi</h2>
-            <p className="mt-2">Yukarıdaki haklarınızı kullanmak için [başvuru e-postası / adresi] üzerinden
+            <p className="mt-2">Yukarıdaki haklarınızı kullanmak için destek@sosyalpanel.tr üzerinden
               bize ulaşabilirsiniz. Sipariş verilerinizin kalıcı olarak silinmesini doğrudan{" "}
               <Link href="/veri-silme-talebi" className="text-brand hover:underline">Veri Silme Talebi</Link> sayfamızdan da isteyebilirsiniz.</p>
           </section>

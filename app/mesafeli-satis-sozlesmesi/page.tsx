@@ -8,17 +8,11 @@ export default function MesafeliSatisPage() {
       <div className="mx-auto max-w-2xl px-5 py-16 text-slateMute">
         <h1 className="font-display text-3xl font-bold text-slate">Mesafeli Satış Sözleşmesi</h1>
 
-        <div className="mt-4 rounded-lg border border-amber-300 bg-amber-50 p-4 text-sm text-amber-800">
-          <strong>Önemli:</strong> Bu sayfa genel bir taslaktır, 6502 sayılı Tüketicinin Korunması Hakkında
-          Kanun ve Mesafeli Sözleşmeler Yönetmeliği'ne göre hazırlanmış olsa da hukuki tavsiye değildir.
-          Yayına almadan önce bir avukata onaylatıp kendi bilgilerinle (unvan, adres, MERSİS no vb.) güncelle.
-        </div>
-
         <div className="mt-8 flex flex-col gap-6 text-sm leading-relaxed">
           <section>
             <h2 className="font-display font-semibold text-slate">Madde 1 — Taraflar</h2>
             <p className="mt-2">
-              <strong>Satıcı:</strong> [Şahıs Şirketi Unvanı], [Adres], [Vergi Dairesi/No]<br />
+              <strong>Satıcı:</strong> MK Software (Melih Keleş), Yenimahalle, Ankara, Vergi No: 5431084511<br />
               <strong>Alıcı:</strong> Sipariş sırasında bilgileri alınan müşteri
             </p>
           </section>
@@ -43,7 +37,7 @@ export default function MesafeliSatisPage() {
               Hizmet, Alıcı'nın onayı ile ifasına hemen başlanan ve niteliği gereği iadesi mümkün olmayan
               elektronik ortamda anında ifa edilen hizmetler kapsamındadır. Mesafeli Sözleşmeler
               Yönetmeliği'nin ilgili maddeleri uyarınca, ifasına başlanan bu tür hizmetlerde cayma hakkı
-              kullanılamaz. [Bu maddeyi kendi hizmet modeline göre bir avukatla teyit et.]
+              kullanılamaz.
             </p>
           </section>
           <section>
@@ -56,7 +50,7 @@ export default function MesafeliSatisPage() {
           <section>
             <h2 className="font-display font-semibold text-slate">Madde 6 — Uyuşmazlıkların Çözümü</h2>
             <p className="mt-2">
-              İşbu sözleşmeden doğan uyuşmazlıklarda [şehir] Tüketici Hakem Heyetleri ve Tüketici
+              İşbu sözleşmeden doğan uyuşmazlıklarda Ankara Tüketici Hakem Heyetleri ve Tüketici
               Mahkemeleri yetkilidir.
             </p>
           </section>

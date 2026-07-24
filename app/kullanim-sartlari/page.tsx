@@ -8,18 +8,13 @@ export default function KullanimSartlariPage() {
       <div className="mx-auto max-w-2xl px-5 py-16 text-slateMute">
         <h1 className="font-display text-3xl font-bold text-slate">Kullanım Şartları</h1>
 
-        <div className="mt-4 rounded-lg border border-amber/40 bg-amber/10 p-4 text-sm text-amber">
-          <strong>Önemli:</strong> Bu sayfa genel bir taslaktır ve hukuki tavsiye niteliği taşımaz.
-          Yayına almadan önce bir avukata veya mali müşavire onaylatman, şirket unvanını, MERSİS/vergi
-          numaranı, iletişim adresini ve gerçek uyuşmazlık çözüm yerini kendi bilgilerinle güncellemen gerekir.
-        </div>
-
         <div className="mt-8 flex flex-col gap-6 text-sm leading-relaxed">
           <section>
             <h2 className="font-display font-semibold text-slate">1. Taraflar</h2>
             <p className="mt-2">
-              Bu kullanım şartları, [Şirket Unvanı] ("Panel") ile platformu kullanan üye ("Kullanıcı")
-              arasındaki ilişkiyi düzenler. Panele üye olarak bu şartları kabul etmiş sayılırsınız.
+              Bu kullanım şartları, MK Software (Melih Keleş) ("Panel") ile platformu kullanan
+              müşteri ("Kullanıcı") arasındaki ilişkiyi düzenler. Siteyi kullanarak bu şartları kabul
+              etmiş sayılırsınız.
             </p>
           </section>
           <section>
@@ -39,18 +34,19 @@ export default function KullanimSartlariPage() {
             </p>
           </section>
           <section>
-            <h2 className="font-display font-semibold text-slate">4. Bakiye ve Ödemeler</h2>
+            <h2 className="font-display font-semibold text-slate">4. Sipariş ve Ödeme</h2>
             <p className="mt-2">
-              Bakiye yükleme talepleri, ödemenin doğrulanmasının ardından onaylanır ve kullanıcı hesabına
-              yansıtılır. Yüklenen bakiye yalnızca panel içi hizmet satın alımında kullanılabilir.
-              [İade/nakde çevirme politikanı buraya ekle.]
+              Sipariş, ödeme dekontunun yüklenip Panel tarafından onaylanmasının ardından işleme alınır.
+              Ödeme banka havalesi/EFT ile yapılır. Dekont, sipariş oluşturulduktan sonra 24 saat içinde
+              yüklenmezse sipariş otomatik olarak iptal edilir.
             </p>
           </section>
           <section>
             <h2 className="font-display font-semibold text-slate">5. Sipariş İptali ve İade</h2>
             <p className="mt-2">
-              Sipariş "beklemede" durumundayken destek ekibinden iptal talep edilebilir. İşleme alınmış
-              siparişlerde iade, tedarikçinin iade politikasına tabidir. [Kendi iade politikanı buraya yaz.]
+              Ödemesi onaylanıp işleme alınmış siparişlerde iade yapılmaz; tüm satışlar kesindir.
+              Ödemesi henüz onaylanmamış ("ödeme bekleniyor" durumundaki) siparişler için destek
+              ekibinden iptal talep edilebilir.
             </p>
           </section>
           <section>
@@ -63,13 +59,13 @@ export default function KullanimSartlariPage() {
           <section>
             <h2 className="font-display font-semibold text-slate">7. Uyuşmazlıkların Çözümü</h2>
             <p className="mt-2">
-              İşbu sözleşmeden doğan uyuşmazlıklarda [şehir] Tüketici Hakem Heyetleri ve Mahkemeleri
-              yetkilidir. [Bu maddeyi mutlaka bir hukuk danışmanına onaylat.]
+              İşbu sözleşmeden doğan uyuşmazlıklarda Ankara Tüketici Hakem Heyetleri ve Mahkemeleri
+              yetkilidir.
             </p>
           </section>
           <section>
             <h2 className="font-display font-semibold text-slate">8. İletişim</h2>
-            <p className="mt-2">[Şirket adresi, e-posta, telefon bilgilerini buraya ekle.]</p>
+            <p className="mt-2">MK Software (Melih Keleş), Yenimahalle, Ankara — destek@sosyalpanel.tr</p>
           </section>
         </div>
 
